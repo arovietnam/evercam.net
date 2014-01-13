@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.20827.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{E465322B-A2FE-4C35-BD55-A3E62142D84B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evercam.V1", "Evercam.V1\Evercam.V1.csproj", "{132F7DC0-372D-4D00-8805-5E61691E203E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evercam", "Evercam\Evercam.csproj", "{2EEF6F89-F8D2-4FDE-94F5-13C1953786F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E465322B-A2FE-4C35-BD55-A3E62142D84B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E465322B-A2FE-4C35-BD55-A3E62142D84B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E465322B-A2FE-4C35-BD55-A3E62142D84B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E465322B-A2FE-4C35-BD55-A3E62142D84B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{132F7DC0-372D-4D00-8805-5E61691E203E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{132F7DC0-372D-4D00-8805-5E61691E203E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{132F7DC0-372D-4D00-8805-5E61691E203E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{132F7DC0-372D-4D00-8805-5E61691E203E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EEF6F89-F8D2-4FDE-94F5-13C1953786F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EEF6F89-F8D2-4FDE-94F5-13C1953786F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EEF6F89-F8D2-4FDE-94F5-13C1953786F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EEF6F89-F8D2-4FDE-94F5-13C1953786F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
