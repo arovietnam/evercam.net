@@ -52,10 +52,6 @@
       <Project>{132f7dc0-372d-4d00-8805-5e61691e203e}</Project>
       <Name>Evercam.V1</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Evercam\Evercam.csproj">
-      <Project>{2eef6f89-f8d2-4fde-94f5-13c1953786f4}</Project>
-      <Name>Evercam</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

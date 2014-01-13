@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -14,8 +12,6 @@ using unirest_net.request;
 
 using System.Runtime.Serialization;
 using System.Web.Script.Serialization;
-
-using Evercam;
 
 namespace Evercam.V1
 {
