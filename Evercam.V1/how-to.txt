@@ -1,0 +1,51 @@
+﻿A. Vendors
+==========
+
+1. GET /v1/vendors
+------------------
+
+using Evercam.V1;
+List<Vendor> vendors = Vendor.GetAll();
+
+2. GET /v1/vendors/{mac}
+------------------------
+
+using Evercam.V1;
+List<Vendor> vendors = Vendor.GetAllByMac("00:0D:F0");
+
+Further
+-------
+
+Vendor v = new Vendor("Y-cam Solutions");
+string username = v.GetFirmware("*").Auth.Basic.UserName;
+string password = v.GetFirmware("*").Auth.Basic.Password;
+
+
+B. Models
+=========
+
+1. GET /v1/models
+-----------------
+
+using Evercam.V1;
+List<Vendor> vendors = Model.GetAllVendors();
+
+2. GET /v1/models/{vendor}
+--------------------------
+
+using Evercam.V1;
+List<Vendor> vendors = Model.GetAllVendorsById("ycam");
+
+3. GET /v1/models/{vendor}/{model}
+----------------------------------
+
+using Evercam.V1;
+Model model = Model.Get("ycam", "YCW005");
+
+Further
+-------
+
+string jpg = model.Defaults.Snapshots.Jpg;
+string username = model.Defaults.Auth.Basic.UserName;
+string password = model.Defaults.Auth.Basic.Password;
+

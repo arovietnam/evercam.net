@@ -19,15 +19,22 @@ namespace Evercam.V1
     public class Auth
     {
         [DataMember(Name = "basic")]
-        public Credentials Basic { get; set; }
-    }
+        public NetworkCredential Basic { get; set; }
 
-    public class Credentials
-    {
-        [DataMember(Name = "username")]
-        public string UserName { get; set; }
+        public static string GetBasic(string username, string password)
+        {
+            HttpResponse<string> response = Unirest.get("http://api.evercam.io/v1/")
+                .header("accept", "application/json")
+                .header("Authorization", "c2hha2VlbGFuanVtOmFzZGYxMjM0")
+                .asString();
 
-        [DataMember(Name = "password")]
-        public string Password { get; set; }
+            switch (response.Code)
+            {
+                case (int)System.Net.HttpStatusCode.NotFound:
+                    return "";
+            }
+
+            return response.Body.ToString();
+        }
     }
 }

@@ -65,7 +65,7 @@ namespace Evercam.V1
             switch (response.Code)
             {
                 case (int)System.Net.HttpStatusCode.NotFound:
-                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                    return new Model();
             }
 
             var serializer = new JavaScriptSerializer();
@@ -89,7 +89,7 @@ namespace Evercam.V1
             switch (response.Code)
             {
                 case (int)System.Net.HttpStatusCode.NotFound:
-                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                    return new List<Vendor>();
             }
 
             var serializer = new JavaScriptSerializer();

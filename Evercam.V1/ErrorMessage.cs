@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Evercam.V1
 {
-    class Stream
+    public class ErrorMessage
     {
+        List<string> message { get; set; }
     }
 }

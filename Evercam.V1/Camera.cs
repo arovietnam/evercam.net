@@ -16,25 +16,13 @@ using System.Web.Script.Serialization;
 namespace Evercam.V1
 {
     [DataContract]
-    public class User
+    public class Camera
     {
         [DataMember(Name = "id")]
         public string ID { get; set; }
 
-        [DataMember(Name = "forename")]
-        public string ForeName { get; set; }
-        
-        [DataMember(Name = "lastname")]
-        public string LastName { get; set; }
-
-        [DataMember(Name = "username")]
-        public string UserName { get; set; }
-
-        [DataMember(Name = "email")]
-        public string Email { get; set; }
-
-        [DataMember(Name = "country")]
-        public string Country { get; set; }
+        [DataMember(Name = "owner")]
+        public string Owner { get; set; }
 
         [DataMember(Name = "created_at")]
         public long Created_At { get; set; }
@@ -42,14 +30,23 @@ namespace Evercam.V1
         [DataMember(Name = "updated_at")]
         public long Updated_At { get; set; }
 
-        [DataMember(Name = "confirmed_at")]
-        public long Confirmed_At { get; set; }
+        [DataMember(Name = "endpoints")]
+        public List<string> Endpoints { get; set; }
 
-        public static List<User> Create(User user)
+        [DataMember(Name = "is_public")]
+        public bool Is_Public { get; set; }
+
+        [DataMember(Name = "auth")]
+        public Auth Auth;
+
+        [DataMember(Name = "snapshots")]
+        public Snapshots Snapshots;
+
+        public static List<Camera> Create(Camera camera)
         {
-            HttpResponse<string> response = Unirest.Post(API.USERS_URL)
+            HttpResponse<string> response = Unirest.Post(API.CAMERAS_URL)
                 .header("accept", "application/json")
-                .body<User>(user)
+                .body<Camera>(camera)
                 .asJson<string>();
 
             switch (response.Code)
@@ -60,14 +57,14 @@ namespace Evercam.V1
 
             var serializer = new JavaScriptSerializer();
             serializer.MaxJsonLength = Common.MaxJsonLength;
-            List<User> list = serializer.Deserialize<List<User>>(response.Body);
+            List<Camera> list = serializer.Deserialize<List<Camera>>(response.Body);
             
             return list;
         }
 
-        public static List<Camera> GetAllCameras(string userId)
+        public static List<Camera> Get(string cameraId)
         {
-            return GetCameras(API.USERS_URL + userId + "/cameras/");
+            return GetCameras(API.CAMERAS_URL + cameraId);
         }
 
         private static List<Camera> GetCameras(string url)
@@ -88,12 +85,5 @@ namespace Evercam.V1
             CamerasList list = serializer.Deserialize<CamerasList>(response.Body);
             return list.cameras;
         }
-    }
-
-    [DataContract]
-    class CamerasList
-    {
-        [DataMember(Name = "cameras")]
-        public List<Camera> cameras;
     }
 }

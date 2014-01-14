@@ -36,12 +36,18 @@ namespace Evercam.V1
         [DataMember(Name = "models")]
         public List<string> Models { get; set; }
 
-
         public Vendor() { }
 
+        /// <summary>
+        /// Constructor: Initialize new vendor object with given name
+        /// </summary>
+        /// <param name="name">Vendor Name</param>
         public Vendor(string name)
         {
             Vendor vendor = GetAllByName(name).FirstOrDefault<Vendor>();
+            if (vendor == null)
+                return;
+
             this.ID = vendor.ID;
             this.Is_Supported = vendor.Is_Supported;
             this.Name = vendor.Name;
@@ -58,7 +64,7 @@ namespace Evercam.V1
         public Firmware GetFirmware(string name)
         {
             if (Firmwares.Count == 0)
-                throw new Exception("Unknown firmware name");
+                return null;
 
             foreach (Firmware fw in Firmwares)
             {
@@ -66,7 +72,7 @@ namespace Evercam.V1
                     return fw;
             }
 
-            throw new Exception("Unknown firmware name");
+            return null;
         }
 
         /// <summary>
@@ -94,9 +100,9 @@ namespace Evercam.V1
                     list.Add(v);
             }
 
-            // If there are no matches the server will return a 404 NOT FOUND status
-            if (list.Count == 0)
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+            //// If there are no matches the server will return a 404 NOT FOUND status
+            //if (list.Count == 0)
+            //    throw new HttpResponseException(HttpStatusCode.NotFound);
 
             return list;
         }
@@ -125,7 +131,7 @@ namespace Evercam.V1
             switch (response.Code)
             {
                 case (int)System.Net.HttpStatusCode.NotFound:
-                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                    return new List<Vendor>();
             }
 
             var serializer = new JavaScriptSerializer();
