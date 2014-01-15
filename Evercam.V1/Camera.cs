@@ -72,7 +72,7 @@ namespace Evercam.V1
         {
             HttpResponse<string> response = Unirest.get(url)
                 .header("accept", "application/json")
-                .header("authorization", "basic " + auth.Basic.Encoded)
+                .header("authorization", auth.Basic.Encoded)
                 .asString();
 
             switch (response.Code)
