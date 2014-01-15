@@ -42,42 +42,43 @@ namespace Evercam.V1
         [DataMember(Name = "snapshots")]
         public Snapshots Snapshots;
 
-        public static List<Camera> Create(Camera camera)
+        public Camera Create(Auth auth)
         {
             HttpResponse<string> response = Unirest.Post(API.CAMERAS_URL)
                 .header("accept", "application/json")
-                .body<Camera>(camera)
+                .header("authorization", auth.Basic.Encoded)
+                .body<Camera>(this)
                 .asJson<string>();
 
             switch (response.Code)
             {
                 case (int)System.Net.HttpStatusCode.BadRequest:
-                    throw new Exception(response.Body);
+                case (int)System.Net.HttpStatusCode.NotFound:
+                    return new Camera();
             }
 
             var serializer = new JavaScriptSerializer();
             serializer.MaxJsonLength = Common.MaxJsonLength;
-            List<Camera> list = serializer.Deserialize<List<Camera>>(response.Body);
             
-            return list;
+            return serializer.Deserialize<Camera>(response.Body);
         }
 
-        public static List<Camera> Get(string cameraId)
+        public static Camera Get(string cameraId, Auth auth)
         {
-            return GetCameras(API.CAMERAS_URL + cameraId);
+            return GetCameras(API.CAMERAS_URL + cameraId, auth).FirstOrDefault<Camera>();
         }
 
-        private static List<Camera> GetCameras(string url)
+        private static List<Camera> GetCameras(string url, Auth auth)
         {
             HttpResponse<string> response = Unirest.get(url)
                 .header("accept", "application/json")
-                .header("Authorization", "c2hha2VlbGFuanVtOmFzZGYxMjM0")
+                .header("authorization", "basic " + auth.Basic.Encoded)
                 .asString();
 
             switch (response.Code)
             {
                 case (int)System.Net.HttpStatusCode.NotFound:
-                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                    return new List<Camera>();
             }
 
             var serializer = new JavaScriptSerializer();

@@ -45,36 +45,74 @@ namespace Evercam.V1
         [DataMember(Name = "confirmed_at")]
         public long Confirmed_At { get; set; }
 
-        public static List<User> Create(User user)
+        /// <summary>
+        /// Creates a new user
+        /// </summary>
+        /// <returns>Returns new user details upon success</returns>
+        public User Create()
         {
             HttpResponse<string> response = Unirest.Post(API.USERS_URL)
                 .header("accept", "application/json")
-                .body<User>(user)
+                .body<User>(this)
                 .asJson<string>();
 
             switch (response.Code)
             {
                 case (int)System.Net.HttpStatusCode.BadRequest:
-                    throw new Exception(response.Body);
+                case (int)System.Net.HttpStatusCode.NotFound:
+                    return new User();
             }
 
             var serializer = new JavaScriptSerializer();
             serializer.MaxJsonLength = Common.MaxJsonLength;
-            List<User> list = serializer.Deserialize<List<User>>(response.Body);
-            
-            return list;
+            return serializer.Deserialize<User>(response.Body);
         }
 
+        /// <summary>
+        /// Get all public cameras owned by given user ID
+        /// </summary>
+        /// <param name="userId">Cameras' Owner ID</param>
+        /// <returns>List<Camera></returns>
         public static List<Camera> GetAllCameras(string userId)
         {
             return GetCameras(API.USERS_URL + userId + "/cameras/");
         }
 
+        /// <summary>
+        /// Get all public cameras owned by given user ID and also
+        /// cameras which are shared with user represented by 'auth' details
+        /// </summary>
+        /// <param name="userId">Camera owner ID</param>
+        /// <param name="auth">Auth details of user with whom Camera Owner has shared some cameras</param>
+        /// <returns>List<Camera></returns>
+        public static List<Camera> GetAllCameras(string userId, Auth auth)
+        {
+            return GetCameras(API.USERS_URL + userId + "/cameras/", auth);
+        }
+
         private static List<Camera> GetCameras(string url)
         {
             HttpResponse<string> response = Unirest.get(url)
+                    .header("accept", "application/json")
+                    .asString();
+            
+            switch (response.Code)
+            {
+                case (int)System.Net.HttpStatusCode.NotFound:
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
+            var serializer = new JavaScriptSerializer();
+            serializer.MaxJsonLength = Common.MaxJsonLength;
+            CamerasList list = serializer.Deserialize<CamerasList>(response.Body);
+            return list.cameras;
+        }
+
+        private static List<Camera> GetCameras(string url, Auth auth)
+        {
+            HttpResponse<string> response = Unirest.get(url)
                 .header("accept", "application/json")
-                .header("Authorization", "c2hha2VlbGFuanVtOmFzZGYxMjM0")
+                .header("authorization", auth.Basic.Encoded)
                 .asString();
 
             switch (response.Code)

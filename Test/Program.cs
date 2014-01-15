@@ -12,22 +12,12 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            // Basic Authentication
-            var auth = Auth.GetBasic("shakeelanjum", "asdf1234");
-
-            // Create new user
-            // POST /v1/users
-            User user = new User();
-            user.ForeName = "shakeel";
-            user.LastName = "anjum";
-            user.Email = "shakeel.anjum@camba.tv";
-            user.UserName = "shakeelanjum";
-            user.Country = "pk";
-            var newUser = User.Create(user);
+            var cams = Camera.Get("testcamera", new Auth(new Basic("shakeelanjum", "asdf1234")));
 
             // Get list of cameras of a user (with given user id)
             // GET /v1/users/{id}/cameras
-            var cameras = User.GetAllCameras("shakeelanjum");
+            // var cameras = User.GetAllCameras("joeyb");
+            var cameras = User.GetAllCameras("joeyb", new Auth(new Basic("shakeelanjum", "asdf1234")));
 
             // Get list of all camera vendors
             // GET /v1/vendors
