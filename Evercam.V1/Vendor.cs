@@ -6,35 +6,32 @@ using System.Text;
 using System.Web.Http;
 using System.Threading.Tasks;
 
-using unirest_net;
-using unirest_net.http;
-using unirest_net.request;
-
-using System.Runtime.Serialization;
-using System.Web.Script.Serialization;
+using RestSharp;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Evercam.V1
 {
-    [DataContract]
     public class Vendor
     {
-        [DataMember(Name = "id")]
+        [JsonProperty("id")]
         public string ID { get; set; }
 
-        [DataMember(Name = "name")]
+        [JsonProperty("name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "is_supported")]
-        public bool Is_Supported { get; set; }
+        [JsonProperty("is_supported")]
+        public bool IsSupported { get; set; }
 
-        [DataMember(Name = "known_macs")]
-        public List<string> Known_Macs { get; set; }
+        [JsonProperty("known_macs")]
+        public List<string> KnownMacs { get; set; }
 
-        [DataMember(Name = "firmwares")]
+        [JsonProperty("firmwares")]
         public List<Firmware> Firmwares { get; set; }
 
-        [DataMember(Name = "models")]
+        [JsonProperty("models")]
         public List<string> Models { get; set; }
+
 
         public Vendor() { }
 
@@ -46,16 +43,16 @@ namespace Evercam.V1
         {
             Vendor vendor = GetAllByName(name).FirstOrDefault<Vendor>();
             if (vendor == null)
-                return;
+                throw new Exception("Unknown vendor");
 
             this.ID = vendor.ID;
-            this.Is_Supported = vendor.Is_Supported;
+            this.IsSupported = vendor.IsSupported;
             this.Name = vendor.Name;
             this.Models = vendor.Models;
-            this.Known_Macs = vendor.Known_Macs;
+            this.KnownMacs = vendor.KnownMacs;
             this.Firmwares = vendor.Firmwares;
         }
-        
+
         /// <summary>
         /// Get vendor's firmware with given firmware name
         /// </summary>
@@ -63,16 +60,26 @@ namespace Evercam.V1
         /// <returns>Firmware</returns>
         public Firmware GetFirmware(string name)
         {
-            if (Firmwares.Count == 0)
-                return null;
+            Firmware firmware = null;
 
-            foreach (Firmware fw in Firmwares)
+            try
             {
-                if (fw.Name.ToLower().Equals(name.ToLower()))
-                    return fw;
+                List<Firmware> list = Firmwares;
+                foreach (Firmware item in list)
+                {
+                    if (item.Name.ToLower().Equals(name.ToLower()))
+                    {
+                        firmware = item;
+                        break;
+                    }
+                }
             }
+            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
 
-            return null;
+            if (firmware == null)
+                throw new Exception("Unknown firmware");
+
+            return firmware;
         }
 
         /// <summary>
@@ -81,7 +88,7 @@ namespace Evercam.V1
         /// <returns>List<Vendor></returns>
         public static List<Vendor> GetAll()
         {
-            return GetVendors(API.VENDORS_URL);
+            return GetVendors(API.VENDORS);
         }
 
         /// <summary>
@@ -91,18 +98,18 @@ namespace Evercam.V1
         /// <returns>List<Vendor></returns>
         public static List<Vendor> GetAllByName(string name)
         {
-            List<Vendor> allVendors = GetVendors(API.VENDORS_URL);
+            List<Vendor> allVendors = GetVendors(API.VENDORS);
             List<Vendor> list = new List<Vendor>();
-            
-            foreach (Vendor v in allVendors)
-            {
-                if (v.Name.ToLower().Equals(name.ToLower()))
-                    list.Add(v);
-            }
 
-            //// If there are no matches the server will return a 404 NOT FOUND status
-            //if (list.Count == 0)
-            //    throw new HttpResponseException(HttpStatusCode.NotFound);
+            try
+            {
+                foreach (Vendor v in allVendors)
+                {
+                    if (v.Name.ToLower().Equals(name.ToLower()))
+                        list.Add(v);
+                }
+            }
+            catch (Exception x) { throw new Exception( "Error Occured: " + x.Message); }
 
             return list;
         }
@@ -114,7 +121,7 @@ namespace Evercam.V1
         /// <returns>List<Vendor></returns>
         public static List<Vendor> GetAllByMac(string mac)
         {
-            return GetVendors(API.VENDORS_URL + mac);
+            return GetVendors(API.VENDORS + mac);
         }
 
         /// <summary>
@@ -122,29 +129,23 @@ namespace Evercam.V1
         /// </summary>
         /// <param name="url">API URL</param>
         /// <returns>List<Vendor></returns>
-        private static List<Vendor> GetVendors(string url)
+        internal static List<Vendor> GetVendors(string url)
         {
-            HttpResponse<string> response = Unirest.get(url)
-                .header("accept", "application/json")
-                .asString();
-
-            switch (response.Code)
+            try
             {
-                case (int)System.Net.HttpStatusCode.NotFound:
-                    return new List<Vendor>();
+                var request = new RestRequest(url, Method.GET);
+                request.RequestFormat = DataFormat.Json;
+                var response = API.Client.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                        throw new Exception(response.Content);
+                }
+
+                return JObject.Parse(response.Content)["vendors"].ToObject<List<Vendor>>();
             }
-
-            var serializer = new JavaScriptSerializer();
-            serializer.MaxJsonLength = Common.MaxJsonLength;
-            VendorsList list = serializer.Deserialize<VendorsList>(response.Body);
-            return list.vendors;
+            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
         }
-    }
-
-    [DataContract]
-    class VendorsList
-    {
-        [DataMember(Name = "vendors")]
-        public List<Vendor> vendors;
     }
 }

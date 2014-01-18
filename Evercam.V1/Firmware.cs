@@ -6,22 +6,18 @@ using System.Text;
 using System.Web.Http;
 using System.Threading.Tasks;
 
-using unirest_net;
-using unirest_net.http;
-using unirest_net.request;
-
-using System.Runtime.Serialization;
-using System.Web.Script.Serialization;
+using RestSharp;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Evercam.V1
 {
-    [DataContract]
     public class Firmware
     {
-        [DataMember(Name = "auth")]
+        [JsonProperty("auth")]
         public Auth Auth { get; set; }
 
-        [DataMember(Name = "name")]
+        [JsonProperty("name")]
         public string Name { get; set; }
     }
 }

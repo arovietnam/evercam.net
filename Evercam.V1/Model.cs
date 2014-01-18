@@ -6,28 +6,24 @@ using System.Text;
 using System.Web.Http;
 using System.Threading.Tasks;
 
-using unirest_net;
-using unirest_net.http;
-using unirest_net.request;
-
-using System.Runtime.Serialization;
-using System.Web.Script.Serialization;
+using RestSharp;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Evercam.V1
 {
-    [DataContract]
     public class Model
     {
-        [DataMember(Name = "name")]
+        [JsonProperty("name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "vendor")]
+        [JsonProperty("vendor")]
         public string vendor { get; set; }
 
-        [DataMember(Name = "known_models")]
-        public List<string> Known_Models { get; set; }
+        [JsonProperty("known_models")]
+        public List<string> KnownModels { get; set; }
 
-        [DataMember(Name = "defaults")]
+        [JsonProperty("defaults")]
         public Defaults Defaults { get; set; }
 
         
@@ -37,7 +33,7 @@ namespace Evercam.V1
         /// <returns>List<Vendor></returns>
         public static List<Vendor> GetAllVendors()
         {
-            return GetVendors(API.MODELS_URL);
+            return Vendor.GetVendors(API.MODELS);
         }
 
         /// <summary>
@@ -47,7 +43,7 @@ namespace Evercam.V1
         /// <returns>List<Vendor></returns>
         public static List<Vendor> GetAllVendorsById(string vendorId)
         {
-            return GetVendors(API.MODELS_URL + vendorId);
+            return Vendor.GetVendors(API.MODELS + vendorId);
         }
 
         /// <summary>
@@ -58,68 +54,65 @@ namespace Evercam.V1
         /// <returns>Model</returns>
         public static Model Get(string vendorId, string modelId)
         {
-            HttpResponse<string> response = Unirest.get(API.MODELS_URL + vendorId + "/" + modelId)
-                .header("accept", "application/json")
-                .asString();
-
-            switch (response.Code)
+            try
             {
-                case (int)System.Net.HttpStatusCode.NotFound:
-                    return new Model();
+                var request = new RestRequest(API.MODELS + vendorId + "/" + modelId, Method.GET);
+                request.RequestFormat = DataFormat.Json;
+                var response = API.Client.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                        throw new Exception(response.Content);
+                }
+
+                return JObject.Parse(response.Content)["models"].ToObject<List<Model>>().FirstOrDefault<Model>();
             }
-
-            var serializer = new JavaScriptSerializer();
-            serializer.MaxJsonLength = Common.MaxJsonLength;
-            ModelsList list = serializer.Deserialize<ModelsList>(response.Body);
-
-            return list.models.FirstOrDefault<Model>();
+            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
         }
 
-        /// <summary>
-        /// PRIVATE: Get list of all vendors
-        /// </summary>
-        /// <param name="url">API URL</param>
-        /// <returns>List<Vendor></returns>
-        private static List<Vendor> GetVendors(string url)
-        {
-            HttpResponse<string> response = Unirest.get(url)
-                .header("accept", "application/json")
-                .asString();
+        ///// <summary>
+        ///// PRIVATE: Get list of all vendors
+        ///// </summary>
+        ///// <param name="url">API URL</param>
+        ///// <returns>List<Vendor></returns>
+        //private static List<Vendor> GetVendors(string url)
+        //{
+        //    HttpResponse<string> response = Unirest.get(url)
+        //        .header("accept", "application/json")
+        //        .asString();
 
-            switch (response.Code)
-            {
-                case (int)System.Net.HttpStatusCode.NotFound:
-                    return new List<Vendor>();
-            }
+        //    switch (response.Code)
+        //    {
+        //        case (int)System.Net.HttpStatusCode.NotFound:
+        //            return new List<Vendor>();
+        //    }
 
-            var serializer = new JavaScriptSerializer();
-            serializer.MaxJsonLength = Common.MaxJsonLength;
-            VendorsList list = serializer.Deserialize<VendorsList>(response.Body);
-            return list.vendors;
-        }
+        //    var serializer = new JavaScriptSerializer();
+        //    serializer.MaxJsonLength = Common.MaxJsonLength;
+        //    VendorsList list = serializer.Deserialize<VendorsList>(response.Body);
+        //    return list.vendors;
+        //}
     }
 
-    [DataContract]
     class ModelsList
     {
-        [DataMember(Name = "models")]
+        [JsonProperty("models")]
         public List<Model> models;
     }
 
-    [DataContract]
     public class Defaults
     {
-        [DataMember(Name = "auth")]
+        [JsonProperty("auth")]
         public Auth Auth;
 
-        [DataMember(Name = "snapshots")]
+        [JsonProperty("snapshots")]
         public Snapshots Snapshots;
     }
 
-    [DataContract]
     public class Snapshots
     {
-        [DataMember(Name = "jpg")]
+        [JsonProperty("jpg")]
         public string Jpg;
     }
 }

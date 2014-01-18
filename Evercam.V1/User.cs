@@ -6,44 +6,32 @@ using System.Text;
 using System.Web.Http;
 using System.Threading.Tasks;
 
-using unirest_net;
-using unirest_net.http;
-using unirest_net.request;
-
-using System.Runtime.Serialization;
-using System.Web.Script.Serialization;
+using RestSharp;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Evercam.V1
 {
-    [DataContract]
     public class User
     {
-        [DataMember(Name = "id")]
+        [JsonProperty("id")]
         public string ID { get; set; }
-
-        [DataMember(Name = "forename")]
+        [JsonProperty("forename")]
         public string ForeName { get; set; }
-        
-        [DataMember(Name = "lastname")]
+        [JsonProperty("lastname")]
         public string LastName { get; set; }
-
-        [DataMember(Name = "username")]
+        [JsonProperty("username")]
         public string UserName { get; set; }
-
-        [DataMember(Name = "email")]
+        [JsonProperty("email")]
         public string Email { get; set; }
-
-        [DataMember(Name = "country")]
+        [JsonProperty("country")]
         public string Country { get; set; }
-
-        [DataMember(Name = "created_at")]
-        public long Created_At { get; set; }
-
-        [DataMember(Name = "updated_at")]
-        public long Updated_At { get; set; }
-
-        [DataMember(Name = "confirmed_at")]
-        public long Confirmed_At { get; set; }
+        [JsonProperty("created_at")]
+        public long CreatedAt { get; set; }
+        [JsonProperty("updated_at")]
+        public long UpdatedAt { get; set; }
+        [JsonProperty("confirmed_at")]
+        public long ConfirmedAt { get; set; }
 
         /// <summary>
         /// Creates a new user
@@ -51,21 +39,22 @@ namespace Evercam.V1
         /// <returns>Returns new user details upon success</returns>
         public User Create()
         {
-            HttpResponse<string> response = Unirest.Post(API.USERS_URL)
-                .header("accept", "application/json")
-                .body<User>(this)
-                .asJson<string>();
-
-            switch (response.Code)
+            try
             {
-                case (int)System.Net.HttpStatusCode.BadRequest:
-                case (int)System.Net.HttpStatusCode.NotFound:
-                    return new User();
-            }
+                var request = new RestRequest("users/", Method.POST);
+                request.AddParameter("text/json", JsonConvert.SerializeObject(this), ParameterType.RequestBody);
+                request.RequestFormat = DataFormat.Json;
+                var response = API.Client.Execute(request);
 
-            var serializer = new JavaScriptSerializer();
-            serializer.MaxJsonLength = Common.MaxJsonLength;
-            return serializer.Deserialize<User>(response.Body);
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.BadRequest:
+                        throw new Exception(response.Content);
+                }
+
+                return JsonConvert.DeserializeObject<User>(response.Content);
+            }
+            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
         }
 
         /// <summary>
@@ -75,7 +64,7 @@ namespace Evercam.V1
         /// <returns>List<Camera></returns>
         public static List<Camera> GetAllCameras(string userId)
         {
-            return GetCameras(API.USERS_URL + userId + "/cameras/");
+            return Camera.GetCameras(API.USERS + userId + "/cameras/");
         }
 
         /// <summary>
@@ -87,51 +76,7 @@ namespace Evercam.V1
         /// <returns>List<Camera></returns>
         public static List<Camera> GetAllCameras(string userId, Auth auth)
         {
-            return GetCameras(API.USERS_URL + userId + "/cameras/", auth);
+            return Camera.GetCameras(API.USERS + userId + "/cameras/", auth);
         }
-
-        private static List<Camera> GetCameras(string url)
-        {
-            HttpResponse<string> response = Unirest.get(url)
-                    .header("accept", "application/json")
-                    .asString();
-            
-            switch (response.Code)
-            {
-                case (int)System.Net.HttpStatusCode.NotFound:
-                    return new List<Camera>();
-            }
-
-            var serializer = new JavaScriptSerializer();
-            serializer.MaxJsonLength = Common.MaxJsonLength;
-            CamerasList list = serializer.Deserialize<CamerasList>(response.Body);
-            return list.cameras;
-        }
-
-        private static List<Camera> GetCameras(string url, Auth auth)
-        {
-            HttpResponse<string> response = Unirest.get(url)
-                .header("accept", "application/json")
-                .header("authorization", auth.Basic.Encoded)
-                .asString();
-
-            switch (response.Code)
-            {
-                case (int)System.Net.HttpStatusCode.NotFound:
-                    return new List<Camera>();
-            }
-
-            var serializer = new JavaScriptSerializer();
-            serializer.MaxJsonLength = Common.MaxJsonLength;
-            CamerasList list = serializer.Deserialize<CamerasList>(response.Body);
-            return list.cameras;
-        }
-    }
-
-    [DataContract]
-    class CamerasList
-    {
-        [DataMember(Name = "cameras")]
-        public List<Camera> cameras;
     }
 }

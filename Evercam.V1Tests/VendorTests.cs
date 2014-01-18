@@ -19,9 +19,6 @@ namespace Evercam.V1.Tests
         {
             Vendor vendor = new Vendor("TP-Link Technologies");
             Assert.AreEqual("tplink", vendor.ID);
-
-            vendor = new Vendor("Axis");
-            Assert.IsNull(vendor.ID);
         }
 
         [TestMethod()]
@@ -44,6 +41,7 @@ namespace Evercam.V1.Tests
         }
 
         [TestMethod()]
+        [ExpectedException(typeof(Exception))]
         public void GetAllByNameTest()
         {
             Vendor vendor = new Vendor("TP-Link Technologies");
@@ -55,11 +53,12 @@ namespace Evercam.V1.Tests
         }
 
         [TestMethod()]
+        [ExpectedException(typeof(Exception))]
         public void GetAllByMacTest()
         {
             List<Vendor> vendors = Vendor.GetAllByMac("00:73:57");
             Assert.AreEqual(1, vendors.Count);
-            Assert.IsTrue(vendors[0].Known_Macs.Contains("00:73:57"));
+            Assert.IsTrue(vendors[0].KnownMacs.Contains("00:73:57"));
 
             vendors = Vendor.GetAllByMac("nonExistentMac");
             Assert.AreEqual(0, vendors.Count);

@@ -22,6 +22,7 @@ namespace Evercam.V1.Tests
         }
 
         [TestMethod()]
+        [ExpectedException(typeof(Exception))]
         public void GetAllVendorsByIdTest()
         {
             List<Vendor> vendors = Model.GetAllVendorsById("testid");

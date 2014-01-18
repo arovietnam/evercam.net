@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -6,85 +8,127 @@ using System.Text;
 using System.Web.Http;
 using System.Threading.Tasks;
 
-using unirest_net;
-using unirest_net.http;
-using unirest_net.request;
-
-using System.Runtime.Serialization;
-using System.Web.Script.Serialization;
+using RestSharp;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Evercam.V1
 {
-    [DataContract]
     public class Camera
     {
-        [DataMember(Name = "id")]
+        [JsonProperty("id")]
         public string ID { get; set; }
 
-        [DataMember(Name = "owner")]
+        [JsonProperty("owner")]
         public string Owner { get; set; }
 
-        [DataMember(Name = "created_at")]
-        public long Created_At { get; set; }
+        [JsonProperty("created_at")]
+        public long CreatedAt { get; set; }
 
-        [DataMember(Name = "updated_at")]
-        public long Updated_At { get; set; }
+        [JsonProperty("updated_at")]
+        public long UpdatedAt { get; set; }
 
-        [DataMember(Name = "endpoints")]
+        [JsonProperty("endpoints")]
         public List<string> Endpoints { get; set; }
 
-        [DataMember(Name = "is_public")]
-        public bool Is_Public { get; set; }
+        [JsonProperty("is_public")]
+        public bool IsPublic { get; set; }
 
-        [DataMember(Name = "auth")]
+        [JsonProperty("auth")]
         public Auth Auth;
 
-        [DataMember(Name = "snapshots")]
+        [JsonProperty("snapshots")]
         public Snapshots Snapshots;
 
         public Camera Create(Auth auth)
         {
-            HttpResponse<string> response = Unirest.Post(API.CAMERAS_URL)
-                .header("accept", "application/json")
-                .header("authorization", auth.Basic.Encoded)
-                .body<Camera>(this)
-                .asJson<string>();
-
-            switch (response.Code)
+            try
             {
-                case (int)System.Net.HttpStatusCode.BadRequest:
-                case (int)System.Net.HttpStatusCode.NotFound:
-                    return new Camera();
-            }
+                var request = new RestRequest("cameras/", Method.POST);
+                request.AddParameter("text/json", JsonConvert.SerializeObject(this), ParameterType.RequestBody);
+                request.RequestFormat = DataFormat.Json;
 
-            var serializer = new JavaScriptSerializer();
-            serializer.MaxJsonLength = Common.MaxJsonLength;
-            
-            return serializer.Deserialize<Camera>(response.Body);
+                API.Client.Authenticator = new HttpBasicAuthenticator(auth.Basic.UserName, auth.Basic.Password);
+                var response = API.Client.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.BadRequest:
+                        throw new Exception(response.Content);
+                }
+
+                return JsonConvert.DeserializeObject<Camera>(response.Content);
+            }
+            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
         }
 
         public static Camera Get(string cameraId, Auth auth)
         {
-            return GetCameras(API.CAMERAS_URL + cameraId, auth).FirstOrDefault<Camera>();
+            return GetCameras(API.CAMERAS + cameraId, auth).FirstOrDefault<Camera>();
         }
 
-        private static List<Camera> GetCameras(string url, Auth auth)
+        public MemoryStream GetLiveImage(string streamUrl, bool useAuth)
         {
-            HttpResponse<string> response = Unirest.get(url)
-                .header("accept", "application/json")
-                .header("authorization", auth.Basic.Encoded)
-                .asString();
-
-            switch (response.Code)
+            try
             {
-                case (int)System.Net.HttpStatusCode.NotFound:
-                    return new List<Camera>();
-            }
+                API.Client.BaseUrl = streamUrl;
+                var request = new RestRequest(Method.GET);
+                request.RequestFormat = DataFormat.Json;
 
-            var serializer = new JavaScriptSerializer();
-            serializer.MaxJsonLength = Common.MaxJsonLength;
-            CamerasList list = serializer.Deserialize<CamerasList>(response.Body);
-            return list.cameras;
+                if (useAuth)
+                    API.Client.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+
+                var response = API.Client.Execute(request);
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.Unauthorized:
+                        throw new Exception(response.Content);
+                }
+                return new MemoryStream(response.RawBytes);
+            }
+            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+        }
+
+        internal static List<Camera> GetCameras(string url)
+        {
+            try
+            {
+                var request = new RestRequest(url, Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                var response = API.Client.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                        throw new Exception(response.Content);
+                }
+
+                return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
+            }
+            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+        }
+
+        internal static List<Camera> GetCameras(string url, Auth auth)
+        {
+            try
+            {
+                var request = new RestRequest(url, Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                API.Client.Authenticator = new HttpBasicAuthenticator(auth.Basic.UserName, auth.Basic.Password);
+                var response = API.Client.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                        throw new Exception(response.Content);
+                }
+
+                return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
+            }
+            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
         }
     }
 }
