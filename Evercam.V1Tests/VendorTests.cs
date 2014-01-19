@@ -17,6 +17,7 @@ namespace Evercam.V1.Tests
         [TestMethod()]
         public void VendorTest1()
         {
+            API.SANDBOX = true;
             Vendor vendor = new Vendor("TP-Link Technologies");
             Assert.AreEqual("tplink", vendor.ID);
         }
@@ -24,6 +25,7 @@ namespace Evercam.V1.Tests
         [TestMethod()]
         public void GetFirmwareTest()
         {
+            API.SANDBOX = true;
             List<Vendor> vendors = Vendor.GetAllByMac("00:73:57");
             Assert.AreEqual(1, vendors.Count);
             Assert.AreEqual(1, vendors[0].Firmwares.Count);
@@ -36,6 +38,7 @@ namespace Evercam.V1.Tests
         [TestMethod()]
         public void GetAllTest()
         {
+            API.SANDBOX = true;
             List<Vendor> vendors = Vendor.GetAll();
             Assert.AreEqual(2, vendors.Count);
         }
@@ -44,6 +47,7 @@ namespace Evercam.V1.Tests
         [ExpectedException(typeof(Exception))]
         public void GetAllByNameTest()
         {
+            API.SANDBOX = true;
             Vendor vendor = new Vendor("TP-Link Technologies");
             Assert.AreEqual("TP-Link Technologies", vendor.Name);
             Assert.IsNotNull(vendor.ID);
@@ -56,6 +60,7 @@ namespace Evercam.V1.Tests
         [ExpectedException(typeof(Exception))]
         public void GetAllByMacTest()
         {
+            API.SANDBOX = true;
             List<Vendor> vendors = Vendor.GetAllByMac("00:73:57");
             Assert.AreEqual(1, vendors.Count);
             Assert.IsTrue(vendors[0].KnownMacs.Contains("00:73:57"));

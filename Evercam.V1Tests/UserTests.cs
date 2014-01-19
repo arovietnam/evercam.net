@@ -15,7 +15,7 @@ namespace Evercam.V1.Tests
         [ExpectedException(typeof(Exception))]
         public void CreateTest()
         {
-            API.SANDBOX = false;
+            API.SANDBOX = true;
             User userInfo = new User()
             {
                 UserName = "joeyb",
@@ -41,6 +41,7 @@ namespace Evercam.V1.Tests
         [TestMethod()]
         public void GetAllCamerasTest()
         {
+            API.SANDBOX = true;
             // Public Access: Get all public cameras owned by "joeyb"
             List<Camera> cameras = User.GetAllCameras("joeyb");
             Assert.AreEqual(1, cameras.Count);
@@ -49,7 +50,7 @@ namespace Evercam.V1.Tests
 
             // Protected Access: Get all public cameras owned by "joeyb" 
             // plus his cameras shared with "shakeelanjum"
-            cameras = User.GetAllCameras("joeyb", new Auth("shakeelanjum", "asdf1234"));
+            cameras = User.GetAllCameras("joeyb", new Auth(new Basic("shakeelanjum", "asdf1234")));
             Assert.AreEqual(1, cameras.Count);
             Assert.AreEqual("joeyb", cameras[0].Owner);
             Assert.AreEqual("my-camera-name", cameras[0].ID);

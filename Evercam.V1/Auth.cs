@@ -17,13 +17,21 @@ namespace Evercam.V1
         [JsonProperty("basic")]
         public Basic Basic { get; set; }
 
+        [JsonProperty("oauth")]
+        public OAuth2 OAuth2 { get; set; }
+
         public Auth()
         {
         }
 
-        public Auth(string username, string password)
+        public Auth(Basic basic)
         {
-            Basic = new Basic(username, password);
+            Basic = basic;
+        }
+
+        public Auth(OAuth2 oauth2)
+        {
+            OAuth2 = oauth2;
         }
     }
 
@@ -44,6 +52,34 @@ namespace Evercam.V1
         {
             UserName = username;
             Password = password;
+        }
+    }
+
+    public class OAuth2
+    {
+        [JsonProperty("access_token")]
+        public string AccessToken { get; set; }
+        [JsonProperty("token_type")]
+        public string TokenType { get; set; }
+        [JsonProperty("expires_in")]
+        public long ExpiresIn { get; set; }
+
+        public OAuth2()
+        {
+        }
+
+        public OAuth2(string accesstoken)
+        {
+            AccessToken = accesstoken;
+            TokenType = "bearer";
+            ExpiresIn = 3600;
+        }
+
+        public OAuth2(string accesstoken, string tokentype, long expiresin)
+        {
+            AccessToken = accesstoken;
+            TokenType = tokentype;
+            ExpiresIn = expiresin;
         }
     }
 }

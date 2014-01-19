@@ -19,12 +19,12 @@ namespace Test
             // Get list of cameras of a user (with given user id)
             // GET /v1/users/{id}/cameras
             // var cameras = User.GetAllCameras("joeyb");
-            var cameras = User.GetAllCameras("shakeelanjum", new Auth("shakeelanjum", "asdf1234"));
+            var cameras = User.GetAllCameras("shakeelanjum", new Auth(new Basic("shakeelanjum", "asdf1234")));
 
             // Get details of 'testcamera'
-            var cam = Camera.Get("testcamera", new Auth("shakeelanjum", "asdf1234"));
+            var cam = Camera.Get("testcamera", new Auth(new Basic("shakeelanjum", "asdf1234")));
             // Get live image data of 'testcamera' using its endpoint, jpg url and auth info (if exists)
-            var data = cam.GetLiveImage(cam.Endpoints[2] + cam.Snapshots.Jpg, true);
+            var data = cam.GetLiveImage(cam.Endpoints[2] + cam.Snapshots.Jpg);
 
             // Get vendor by mac address
             // GET /v1/vendors/{mac}

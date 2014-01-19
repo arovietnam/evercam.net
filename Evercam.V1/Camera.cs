@@ -67,7 +67,7 @@ namespace Evercam.V1
             return GetCameras(API.CAMERAS + cameraId, auth).FirstOrDefault<Camera>();
         }
 
-        public MemoryStream GetLiveImage(string streamUrl, bool useAuth)
+        public byte[] GetLiveImage(string streamUrl)
         {
             try
             {
@@ -75,7 +75,9 @@ namespace Evercam.V1
                 var request = new RestRequest(Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
-                if (useAuth)
+                if (!string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                    API.Client.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken);
+                if (!string.IsNullOrEmpty(Auth.Basic.UserName))
                     API.Client.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
 
                 var response = API.Client.Execute(request);
@@ -85,7 +87,7 @@ namespace Evercam.V1
                     case HttpStatusCode.Unauthorized:
                         throw new Exception(response.Content);
                 }
-                return new MemoryStream(response.RawBytes);
+                return response.RawBytes;
             }
             catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
         }

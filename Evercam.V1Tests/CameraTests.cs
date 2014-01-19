@@ -15,6 +15,7 @@ namespace Evercam.V1.Tests
         [ExpectedException(typeof(Exception))]
         public void CreateTest()
         {
+            API.SANDBOX = true;
             Camera c = new Camera()
             {
                 ID = "testcamera",
@@ -22,9 +23,9 @@ namespace Evercam.V1.Tests
                 IsPublic = true,
                 Endpoints = new List<string> { "http://127.0.0.1:8080" },
                 Snapshots = new Snapshots() { Jpg = "/onvif/snapshot" },
-                Auth = new Auth("admin", "12345")
+                Auth = new Auth(new Basic("admin", "12345"))
             };
-            Camera camera = c.Create(new Auth("shakeelanjum", "asdf1234"));
+            Camera camera = c.Create(new Auth(new Basic("shakeelanjum", "asdf1234")));
             Assert.IsNotNull(camera.ID);
             Assert.AreEqual("testcamera", camera.ID);
         }
@@ -33,7 +34,8 @@ namespace Evercam.V1.Tests
         [ExpectedException(typeof(Exception))]
         public void GetTest()
         {
-            Camera camera = Camera.Get("testcamera", new Auth("shakeelanjum", "asdf1234"));
+            API.SANDBOX = true;
+            Camera camera = Camera.Get("testcamera", new Auth(new Basic("shakeelanjum", "asdf1234")));
             Assert.IsNotNull(camera);
             Assert.AreEqual("testcamera", camera.ID);
             Assert.AreEqual("joeyb", camera.Owner);
@@ -41,18 +43,18 @@ namespace Evercam.V1.Tests
             Assert.IsTrue(camera.IsPublic);
 
             // get public image NO Auth
-            MemoryStream data = camera.GetLiveImage(camera.Endpoints[0] + camera.Snapshots.Jpg, false);
+            byte[] data = camera.GetLiveImage(camera.Endpoints[0] + camera.Snapshots.Jpg);
             Assert.AreEqual(105708, data.Length);   // valid image contents
             
             // get protected image WITHOUT Auth
-            data = camera.GetLiveImage(camera.Endpoints[2] + camera.Snapshots.Jpg, false);
+            data = camera.GetLiveImage(camera.Endpoints[2] + camera.Snapshots.Jpg);
             Assert.AreEqual(0, data.Length);
             
             // get protected image WITH Auth
-            data = camera.GetLiveImage(camera.Endpoints[2] + camera.Snapshots.Jpg, true);
+            data = camera.GetLiveImage(camera.Endpoints[2] + camera.Snapshots.Jpg);
             Assert.AreEqual(105708, data.Length);   // valid image contents
 
-            camera = Camera.Get("notestcamera", new Auth("shakeelanjum", "asdf1234"));
+            camera = Camera.Get("notestcamera", new Auth(new Basic("shakeelanjum", "asdf1234")));
             Assert.IsNull(camera);
         }
     }

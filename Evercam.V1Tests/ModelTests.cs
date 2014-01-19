@@ -17,6 +17,7 @@ namespace Evercam.V1.Tests
         [TestMethod()]
         public void GetAllVendorsTest()
         {
+            API.SANDBOX = true;
             List<Vendor> vendors = Model.GetAllVendors();
             Assert.AreEqual(2, vendors.Count);
         }
@@ -25,6 +26,7 @@ namespace Evercam.V1.Tests
         [ExpectedException(typeof(Exception))]
         public void GetAllVendorsByIdTest()
         {
+            API.SANDBOX = true;
             List<Vendor> vendors = Model.GetAllVendorsById("testid");
             Assert.AreEqual(1, vendors.Count);
             Assert.AreEqual("testid", vendors[0].ID);
@@ -36,6 +38,7 @@ namespace Evercam.V1.Tests
         [TestMethod()]
         public void GetTest()
         {
+            API.SANDBOX = true;
             Model model = Model.Get("testid", "YCW005");
             Assert.AreEqual("YCW005", model.Name);
         }
