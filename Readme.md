@@ -21,7 +21,7 @@ List<Vendor> usercameras = User.GetAllCameras("joeyb", new Auth(new Basic("usern
 ### Camera
 ```c#
 // Get details of user's public 'publiccamera'
-Camera cam = Camera.Get("publiccamera", new Auth(new Auth(new OAuth2("accesstoken")));
+Camera cam = Camera.Get("publiccamera");
 
 // Get details of user's private 'privatecamera'
 Camera cam = Camera.Get("privatecamera", new Auth(new Auth(new OAuth2("accesstoken")));

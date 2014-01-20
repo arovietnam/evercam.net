@@ -35,7 +35,7 @@ namespace Evercam.V1.Tests
         public void GetTest()
         {
             API.SANDBOX = true;
-            Camera camera = Camera.Get("testcamera", new Auth(new Basic("shakeelanjum", "asdf1234")));
+            Camera camera = Camera.Get("testcamera");
             Assert.IsNotNull(camera);
             Assert.AreEqual("testcamera", camera.ID);
             Assert.AreEqual("joeyb", camera.Owner);

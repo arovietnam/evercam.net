@@ -62,6 +62,11 @@ namespace Evercam.V1
             catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
         }
 
+        public static Camera Get(string cameraId)
+        {
+            return GetCameras(API.CAMERAS + cameraId).FirstOrDefault<Camera>();
+        }
+
         public static Camera Get(string cameraId, Auth auth)
         {
             return GetCameras(API.CAMERAS + cameraId, auth).FirstOrDefault<Camera>();

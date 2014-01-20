@@ -21,8 +21,8 @@ namespace Test
             // var cameras = User.GetAllCameras("joeyb");
             var cameras = User.GetAllCameras("shakeelanjum", new Auth(new Basic("shakeelanjum", "asdf1234")));
 
-            // Get details of 'testcamera'
-            var cam = Camera.Get("testcamera", new Auth(new Basic("shakeelanjum", "asdf1234")));
+            // Get details of public 'testcamera'
+            var cam = Camera.Get("testcamera");
             // Get live image data of 'testcamera' using its endpoint, jpg url and auth info (if exists)
             var data = cam.GetLiveImage();
             //var data = cam.GetLiveImage(cam.Endpoints[2] + cam.Snapshots.Jpg);
