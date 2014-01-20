@@ -5,7 +5,9 @@ A .NET wrapper around Evercam API
 ## Basic Usage
 ```c#
 using Evercam.V1;
-
+```
+### User
+```c#
 // Get list of public cameras of a user "joeyb"
 List<Camera> publiccameras = User.GetAllCameras("joeyb");
 
@@ -15,6 +17,9 @@ List<Vendor> usercameras = User.GetAllCameras("joeyb", new Auth(new OAuth2("acce
 // Get list of all cameras of a user "joeyb" using Basic Authentication
 List<Vendor> usercameras = User.GetAllCameras("joeyb", new Auth(new Basic("username", "password")));
 
+```
+### Camera
+```c#
 // Get details of user's public 'publiccamera'
 Camera cam = Camera.Get("publiccamera", new Auth(new Auth(new OAuth2("accesstoken")));
 
@@ -24,6 +29,9 @@ Camera cam = Camera.Get("privatecamera", new Auth(new Auth(new OAuth2("accesstok
 // Get live image data of 'privatecamera'
 byte[] imagedata = cam.GetLiveImage();
 
+```
+### Vendor
+```c#
 // Get vendor object by name
 Vendor ycam = new Vendor("ycam");
 String defaultUsername = ycam.GetFirmware("*").Auth.Basic.UserName;
@@ -35,6 +43,9 @@ List<Vendor> vendors = Vendor.GetAll();
 // Get list of vendors by mac address
 List<Vendor> vendors = Vendor.GetAllByMac("00:00:00");
 
+```
+### Model
+```c#
 // Get camera model by vendor and model id
 var model = Model.Get("ycam", "YCW005");
 string username = model.Defaults.Auth.Basic.UserName;
