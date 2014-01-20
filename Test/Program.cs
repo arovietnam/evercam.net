@@ -12,9 +12,16 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            // Get list of all camera vendors
-            // GET /v1/vendors
-            var all = Vendor.GetAll();
+            //Camera c = new Camera()
+            //{
+            //    ID = "hikvision",
+            //    Owner = "shakeelanjum",
+            //    IsPublic = true,
+            //    Endpoints = new List<string> { "http://ec2-54-194-83-178.eu-west-1.compute.amazonaws.com:3000" },
+            //    Snapshots = new Snapshots() { Jpg = "/snapshot.jpg" },
+            //    Auth = new Auth(new Basic("admin", "12345"))
+            //};
+            //Camera camera = c.Create(new Auth(new Basic("shakeelanjum", "asdf1234")));
 
             // Get list of cameras of a user (with given user id)
             // GET /v1/users/{id}/cameras
@@ -26,6 +33,10 @@ namespace Test
             // Get live image data of 'testcamera' using its endpoint, jpg url and auth info (if exists)
             var data = cam.GetLiveImage();
             //var data = cam.GetLiveImage(cam.Endpoints[2] + cam.Snapshots.Jpg);
+
+            // Get list of all camera vendors
+            // GET /v1/vendors
+            var all = Vendor.GetAll();
 
             // Get vendor by mac address
             // GET /v1/vendors/{mac}

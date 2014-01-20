@@ -20,7 +20,7 @@ namespace Evercam.V1
         public const string CAMERAS = "cameras/";
         public const string MODELS = "models/";
 
-        public static RestClient Client = new RestClient(MOCK_URL);
+        public static RestClient Client = new RestClient(LIVE_URL);
 
         public static bool SANDBOX
         {
