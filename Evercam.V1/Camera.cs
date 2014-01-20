@@ -75,9 +75,34 @@ namespace Evercam.V1
                 var request = new RestRequest(Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
-                if (!string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                if (Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
                     API.Client.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken);
-                if (!string.IsNullOrEmpty(Auth.Basic.UserName))
+                if (Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                    API.Client.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+
+                var response = API.Client.Execute(request);
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.Unauthorized:
+                        throw new Exception(response.Content);
+                }
+                return response.RawBytes;
+            }
+            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+        }
+
+        public byte[] GetLiveImage()
+        {
+            try
+            {
+                API.Client.BaseUrl = Endpoints[0] + Snapshots.Jpg;
+                var request = new RestRequest(Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                if (Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                    API.Client.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken);
+                if (Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
                     API.Client.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
 
                 var response = API.Client.Execute(request);

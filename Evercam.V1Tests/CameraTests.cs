@@ -42,20 +42,28 @@ namespace Evercam.V1.Tests
             Assert.AreEqual(3, camera.Endpoints.Count);
             Assert.IsTrue(camera.IsPublic);
 
-            // get public image NO Auth
-            byte[] data = camera.GetLiveImage(camera.Endpoints[0] + camera.Snapshots.Jpg);
-            Assert.AreEqual(105708, data.Length);   // valid image contents
-            
-            // get protected image WITHOUT Auth
-            data = camera.GetLiveImage(camera.Endpoints[2] + camera.Snapshots.Jpg);
-            Assert.AreEqual(0, data.Length);
-            
-            // get protected image WITH Auth
-            data = camera.GetLiveImage(camera.Endpoints[2] + camera.Snapshots.Jpg);
-            Assert.AreEqual(105708, data.Length);   // valid image contents
-
             camera = Camera.Get("notestcamera", new Auth(new Basic("shakeelanjum", "asdf1234")));
             Assert.IsNull(camera);
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(Exception))]
+        public void GetLiveImageTest()
+        {
+            API.SANDBOX = true;
+            Camera camera = Camera.Get("testcamera", new Auth(new Basic("shakeelanjum", "asdf1234")));
+
+            // get public image with default endpoint [0]
+            byte[] data = camera.GetLiveImage();
+            Assert.AreEqual(105708, data.Length);
+
+            // get image from invalid at endpoint [1]
+            data = camera.GetLiveImage(camera.Endpoints[1] + camera.Snapshots.Jpg);
+            Assert.AreEqual(0, data.Length);
+
+            // get protected image from endpoint [2]
+            data = camera.GetLiveImage(camera.Endpoints[2] + camera.Snapshots.Jpg);
+            Assert.AreEqual(105708, data.Length);
         }
     }
 }
