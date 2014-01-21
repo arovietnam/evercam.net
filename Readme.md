@@ -12,10 +12,10 @@ using Evercam.V1;
 List<Camera> publiccameras = User.GetAllCameras("joeyb");
 
 // Get list of all cameras of a user "joeyb" using OAuth2.0 Authentication
-List<Vendor> usercameras = User.GetAllCameras("joeyb", new Auth(new OAuth2("accesstoken")));
+List<Camera> usercameras = User.GetAllCameras("joeyb", new Auth(new OAuth2("accesstoken")));
 
 // Get list of all cameras of a user "joeyb" using Basic Authentication
-List<Vendor> usercameras = User.GetAllCameras("joeyb", new Auth(new Basic("username", "password")));
+List<Camera> usercameras = User.GetAllCameras("joeyb", new Auth(new Basic("username", "password")));
 
 ```
 ### Camera
