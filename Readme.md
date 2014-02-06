@@ -3,6 +3,7 @@
 A .NET wrapper around Evercam API
 
 ## Basic Usage
+Right click on Evercam.V1.dll (link above) and Save Link As...
 ```c#
 using Evercam.V1;
 ```

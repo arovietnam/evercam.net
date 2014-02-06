@@ -12,21 +12,24 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            //Camera c = new Camera()
-            //{
-            //    ID = "hikvision",
-            //    Owner = "shakeelanjum",
-            //    IsPublic = true,
-            //    Endpoints = new List<string> { "http://ec2-54-194-83-178.eu-west-1.compute.amazonaws.com:3000" },
-            //    Snapshots = new Snapshots() { Jpg = "/snapshot.jpg" },
-            //    Auth = new Auth(new Basic("admin", "12345"))
-            //};
-            //Camera camera = c.Create(new Auth(new Basic("shakeelanjum", "asdf1234")));
+            Camera c = new Camera()
+            {
+                ID = "harbour",
+                Name = "Reykjavik Harbour",
+                Owner = "shakeelanjum",
+                Location = new Location() { Latitude = "123456", Longitude = "123456" },
+                IsPublic = true,
+                Endpoints = new List<string> { "http://webcam-1.faxa.rvk.is" },
+                Snapshots = new Snapshots() { Jpg = "/axis-cgi/jpg/image.cgi" },
+                Auth = new Auth(new Basic("admin", "12345"))
+            };
+            //Camera camera = c.Create(new Basic("shakeelanjum", "asdf1234"));
+            Camera camera = c.Delete(new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
 
             // Get list of cameras of a user (with given user id)
             // GET /v1/users/{id}/cameras
             // var cameras = User.GetAllCameras("joeyb");
-            var cameras = User.GetAllCameras("shakeelanjum", new Auth(new Basic("shakeelanjum", "asdf1234")));
+            var cameras = User.GetAllCameras("shakeelanjum", new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
 
             // Get details of public 'testcamera'
             var cam = Camera.Get("testcamera");

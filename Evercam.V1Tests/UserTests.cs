@@ -50,7 +50,7 @@ namespace Evercam.V1.Tests
 
             // Protected Access: Get all public cameras owned by "joeyb" 
             // plus his cameras shared with "shakeelanjum"
-            cameras = User.GetAllCameras("joeyb", new Auth(new Basic("shakeelanjum", "asdf1234")));
+            cameras = User.GetAllCameras("joeyb", new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
             Assert.AreEqual(1, cameras.Count);
             Assert.AreEqual("joeyb", cameras[0].Owner);
             Assert.AreEqual("my-camera-name", cameras[0].ID);

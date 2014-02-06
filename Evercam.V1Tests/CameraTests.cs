@@ -25,7 +25,7 @@ namespace Evercam.V1.Tests
                 Snapshots = new Snapshots() { Jpg = "/onvif/snapshot" },
                 Auth = new Auth(new Basic("admin", "12345"))
             };
-            Camera camera = c.Create(new Auth(new Basic("shakeelanjum", "asdf1234")));
+            Camera camera = c.Create(new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
             Assert.IsNotNull(camera.ID);
             Assert.AreEqual("testcamera", camera.ID);
         }
@@ -42,7 +42,7 @@ namespace Evercam.V1.Tests
             Assert.AreEqual(3, camera.Endpoints.Count);
             Assert.IsTrue(camera.IsPublic);
 
-            camera = Camera.Get("notestcamera", new Auth(new Basic("shakeelanjum", "asdf1234")));
+            camera = Camera.Get("notestcamera", new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
             Assert.IsNull(camera);
         }
 
@@ -51,7 +51,7 @@ namespace Evercam.V1.Tests
         public void GetLiveImageTest()
         {
             API.SANDBOX = true;
-            Camera camera = Camera.Get("testcamera", new Auth(new Basic("shakeelanjum", "asdf1234")));
+            Camera camera = Camera.Get("testcamera", new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
 
             // get public image with default endpoint [0]
             byte[] data = camera.GetLiveImage();

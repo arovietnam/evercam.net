@@ -60,11 +60,11 @@ namespace Evercam.V1
         /// <summary>
         /// Get all public cameras owned by given user ID
         /// </summary>
-        /// <param name="userId">Cameras' Owner ID</param>
-        /// <returns>List<Camera></returns>
+        /// <param name="userId">Camera Owner ID</param>
+        /// <returns>List of Camera objects</returns>
         public static List<Camera> GetAllCameras(string userId)
         {
-            return Camera.GetCameras(API.USERS + userId + "/cameras/");
+            return Camera.GetCameras(API.USERS + userId + "/cameras/", null, AuthMode.None);
         }
 
         /// <summary>
@@ -73,10 +73,10 @@ namespace Evercam.V1
         /// </summary>
         /// <param name="userId">Camera owner ID</param>
         /// <param name="auth">Auth details of user with whom Camera Owner has shared some cameras</param>
-        /// <returns>List<Camera></returns>
-        public static List<Camera> GetAllCameras(string userId, Auth auth)
+        /// <returns>List of Camera objects</returns>
+        public static List<Camera> GetAllCameras(string userId, Auth auth, AuthMode mode)
         {
-            return Camera.GetCameras(API.USERS + userId + "/cameras/", auth);
+            return Camera.GetCameras(API.USERS + userId + "/cameras/", auth, mode);
         }
     }
 }

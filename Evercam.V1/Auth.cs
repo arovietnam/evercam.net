@@ -12,6 +12,13 @@ using Newtonsoft.Json.Linq;
 
 namespace Evercam.V1
 {
+    public enum AuthMode
+    {
+        None = 0,
+        Basic = 1, 
+        OAuth2 = 2
+    }
+
     public class Auth
     {
         [JsonProperty("basic")]
@@ -72,6 +79,13 @@ namespace Evercam.V1
         {
             AccessToken = accesstoken;
             TokenType = "bearer";
+            ExpiresIn = 3600;
+        }
+
+        public OAuth2(string accesstoken, string tokentype)
+        {
+            AccessToken = accesstoken;
+            TokenType = tokentype;
             ExpiresIn = 3600;
         }
 
