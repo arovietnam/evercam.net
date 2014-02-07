@@ -14,17 +14,18 @@ namespace Test
         {
             Camera c = new Camera()
             {
-                ID = "harbour",
-                Name = "Reykjavik Harbour",
+                ID = "remembrancecam",
+                Name = "Remembrance Cam",
                 Owner = "shakeelanjum",
-                Location = new Location() { Latitude = "123456", Longitude = "123456" },
+                Location = new Location() { Latitude = 123456, Longitude = 123456 },
                 IsPublic = true,
-                Endpoints = new List<string> { "http://webcam-1.faxa.rvk.is" },
-                Snapshots = new Snapshots() { Jpg = "/axis-cgi/jpg/image.cgi" },
-                Auth = new Auth(new Basic("admin", "12345"))
+                Timezone = "UTC",
+                Endpoints = new List<string> { "http://89.101.225.158:8105" },
+                Snapshots = new Snapshots() { Jpg = "/Streaming/Channels/1/picture" },
+                Auth = new Auth(new Basic("admin", "mehcam"))
             };
-            //Camera camera = c.Create(new Basic("shakeelanjum", "asdf1234"));
-            Camera camera = c.Delete(new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
+            Camera camera = c.Create(new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
+            //Camera camera = c.Delete(new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
 
             // Get list of cameras of a user (with given user id)
             // GET /v1/users/{id}/cameras

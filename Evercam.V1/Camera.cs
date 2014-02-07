@@ -233,7 +233,7 @@ namespace Evercam.V1
                 if (mode == AuthMode.Basic)
                     API.Client.Authenticator = new HttpBasicAuthenticator(auth.Basic.UserName, auth.Basic.Password);
                 else if (mode == AuthMode.OAuth2)
-                    API.Client.Authenticator = new HttpOAuth2Authenticator(auth.OAuth2.AccessToken);
+                    API.Client.Authenticator = new HttpOAuth2Authenticator(auth.OAuth2.AccessToken, auth.OAuth2.TokenType);
 
                 var response = API.Client.Execute(request);
 
@@ -252,9 +252,9 @@ namespace Evercam.V1
     public class Location
     {
         [JsonProperty("lat")]
-        public string Latitude;
+        public double Latitude;
 
         [JsonProperty("lng")]
-        public string Longitude;
+        public double Longitude;
     }
 }
