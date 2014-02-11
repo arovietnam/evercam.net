@@ -15,6 +15,7 @@ namespace Evercam.V1.Tests
         [ExpectedException(typeof(Exception))]
         public void CreateTest()
         {
+            //var cam = Camera.Get("ReykjavikHarbour1", new Auth(new OAuth2("10059f089aafab0b88d758285ea9f474")), AuthMode.OAuth2);
             API.SANDBOX = true;
             Camera c = new Camera()
             {

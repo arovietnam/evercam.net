@@ -161,9 +161,9 @@ namespace Evercam.V1
                 var request = new RestRequest(Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
-                if (Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
                     API.Client.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken);
-                if (Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
                     API.Client.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
 
                 var response = API.Client.Execute(request);
@@ -186,9 +186,9 @@ namespace Evercam.V1
                 var request = new RestRequest(Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
-                if (Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
                     API.Client.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken);
-                if (Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
                     API.Client.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
 
                 var response = API.Client.Execute(request);
@@ -202,26 +202,6 @@ namespace Evercam.V1
             }
             catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
         }
-
-        //internal static List<Camera> GetCameras(string url)
-        //{
-        //    try
-        //    {
-        //        var request = new RestRequest(url, Method.GET);
-        //        request.RequestFormat = DataFormat.Json;
-
-        //        var response = API.Client.Execute(request);
-
-        //        switch (response.StatusCode)
-        //        {
-        //            case HttpStatusCode.NotFound:
-        //                throw new Exception(response.Content);
-        //        }
-
-        //        return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
-        //    }
-        //    catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
-        //}
 
         internal static List<Camera> GetCameras(string url, Auth auth, AuthMode mode)
         {
@@ -240,6 +220,7 @@ namespace Evercam.V1
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
+                    case HttpStatusCode.Unauthorized:
                         throw new Exception(response.Content);
                 }
 

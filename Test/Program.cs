@@ -14,18 +14,18 @@ namespace Test
         {
             Camera c = new Camera()
             {
-                ID = "remembrancecam",
-                Name = "Remembrance Cam",
-                Owner = "shakeelanjum",
-                Location = new Location() { Latitude = 123456, Longitude = 123456 },
+                ID = "hik-test",
+                Name = "Test Hikvision",
+                //Owner = "shakeelanjum",
                 IsPublic = true,
-                Timezone = "UTC",
-                Endpoints = new List<string> { "http://89.101.225.158:8105" },
-                Snapshots = new Snapshots() { Jpg = "/Streaming/Channels/1/picture" },
-                Auth = new Auth(new Basic("admin", "mehcam"))
+                //Timezone = "Asia/Karachi",
+                //Vendor = "Hikvision",
+                Endpoints = new List<string> { "http://192.168.0.1:80" },
+                //Snapshots = new Snapshots() { Jpg = "/jpg/image.jpg" },
+                //Auth = new Auth(new Basic("admin", "12345"))
             };
-            Camera camera = c.Create(new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
-            //Camera camera = c.Delete(new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
+            //Camera camera = c.Update(new Auth(new OAuth2("48a2a289271689277fcfad44a0b1c86f")), AuthMode.OAuth2);
+            Camera camera = c.Update(new Auth(new Basic("shakeelanjum", "asdf1234")), AuthMode.Basic);
 
             // Get list of cameras of a user (with given user id)
             // GET /v1/users/{id}/cameras
