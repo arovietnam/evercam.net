@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using RestSharp;
 
-namespace Evercam.V1
+namespace EvercamV1
 {
     public class HttpOAuth2Authenticator : OAuth2Authenticator
     {

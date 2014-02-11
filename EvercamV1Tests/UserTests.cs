@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Evercam.V1;
+using EvercamV1;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Evercam.V1.Tests
+namespace EvercamV1.Tests
 {
     [TestClass()]
     public class UserTests

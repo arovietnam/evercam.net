@@ -10,21 +10,14 @@ using RestSharp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Evercam.V1
+namespace EvercamV1
 {
-    public enum AuthMode
-    {
-        None = 0,
-        Basic = 1, 
-        OAuth2 = 2
-    }
-
     public class Auth
     {
-        [JsonProperty("basic")]
+        [JsonProperty("basic", NullValueHandling = NullValueHandling.Ignore)]
         public Basic Basic { get; set; }
 
-        [JsonProperty("oauth")]
+        [JsonProperty("oauth", NullValueHandling = NullValueHandling.Ignore)]
         public OAuth2 OAuth2 { get; set; }
 
         public Auth()
@@ -48,7 +41,7 @@ namespace Evercam.V1
         [JsonProperty("username")]
         public string UserName { get; set; }
 
-        [JsonProperty("password")]
+        [JsonProperty("password", NullValueHandling = NullValueHandling.Ignore)]
         public string Password { get; set; }
 
         public Basic()
@@ -66,9 +59,9 @@ namespace Evercam.V1
     {
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }
-        [JsonProperty("token_type")]
+        [JsonProperty("token_type", NullValueHandling = NullValueHandling.Ignore)]
         public string TokenType { get; set; }
-        [JsonProperty("expires_in")]
+        [JsonProperty("expires_in", NullValueHandling = NullValueHandling.Ignore)]
         public long ExpiresIn { get; set; }
 
         public OAuth2()
@@ -79,14 +72,14 @@ namespace Evercam.V1
         {
             AccessToken = accesstoken;
             TokenType = "bearer";
-            ExpiresIn = 3600;
+            ExpiresIn = 3599;
         }
 
         public OAuth2(string accesstoken, string tokentype)
         {
             AccessToken = accesstoken;
             TokenType = tokentype;
-            ExpiresIn = 3600;
+            ExpiresIn = 3599;
         }
 
         public OAuth2(string accesstoken, string tokentype, long expiresin)

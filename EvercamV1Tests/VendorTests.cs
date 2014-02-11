@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Evercam.V1;
+using EvercamV1;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Evercam.V1.Tests
+namespace EvercamV1.Tests
 {
     /// <summary>
     /// Testing using mockserver: https://github.com/evercam/tools/blob/master/mockserver/mockserver.js
@@ -14,25 +14,14 @@ namespace Evercam.V1.Tests
     [TestClass()]
     public class VendorTests
     {
+        Evercam evercam = new Evercam("shakeelanjum", "asdf1234");
+
         [TestMethod()]
         public void VendorTest1()
         {
             API.SANDBOX = true;
             Vendor vendor = new Vendor("TP-Link Technologies");
             Assert.AreEqual("tplink", vendor.ID);
-        }
-
-        [TestMethod()]
-        public void GetFirmwareTest()
-        {
-            API.SANDBOX = true;
-            List<Vendor> vendors = Vendor.GetAllByMac("00:73:57");
-            Assert.AreEqual(1, vendors.Count);
-            Assert.AreEqual(1, vendors[0].Firmwares.Count);
-            Assert.IsNotNull(vendors[0].GetFirmware("*"));
-            Assert.AreEqual("*", vendors[0].GetFirmware("*").Name);
-            Assert.AreEqual("root", vendors[0].GetFirmware("*").Auth.Basic.UserName);
-            Assert.AreEqual("pass", vendors[0].GetFirmware("*").Auth.Basic.Password);
         }
 
         [TestMethod()]

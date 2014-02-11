@@ -50,16 +50,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="CameraTests.cs" />
-    <Compile Include="ModelTests.cs" />
+    <Compile Include="EvercamTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserTests.cs" />
-    <Compile Include="VendorTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Evercam.V1\Evercam.V1.csproj">
-      <Project>{132F7DC0-372D-4D00-8805-5E61691E203E}</Project>
-      <Name>Evercam.V1</Name>
+    <ProjectReference Include="..\EvercamV1\EvercamV1.csproj">
+      <Project>{132f7dc0-372d-4d00-8805-5e61691e203e}</Project>
+      <Name>EvercamV1</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

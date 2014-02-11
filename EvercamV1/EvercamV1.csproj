@@ -7,8 +7,8 @@
     <ProjectGuid>{132F7DC0-372D-4D00-8805-5E61691E203E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Evercam.V1</RootNamespace>
-    <AssemblyName>Evercam.V1</AssemblyName>
+    <RootNamespace>EvercamV1</RootNamespace>
+    <AssemblyName>EvercamV1</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -60,11 +60,12 @@
     <Compile Include="API.cs" />
     <Compile Include="Auth.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="Firmware.cs" />
+    <Compile Include="Evercam.cs" />
     <Compile Include="HttpOAuth2Authenticator.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="Vendor.cs" />
   </ItemGroup>
   <ItemGroup>

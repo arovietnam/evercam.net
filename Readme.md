@@ -3,52 +3,63 @@
 A .NET wrapper around Evercam API
 
 ## Basic Usage
-Right click on Evercam.V1.dll (link above) and Save Link As...
+Right click on EvercamV1.dll (link above) and Save Link As...
 ```c#
-using Evercam.V1;
+using EvercamV1;
+...
+// OAuth2.0 access token for user "joeyb"
+Evercam evercam = new Evercam("access_token");
+
 ```
 ### User
 ```c#
-// Get list of public cameras of a user "joeyb"
-List<Camera> publiccameras = User.GetAllCameras("joeyb");
+// Get information of user "joeyb"
+User user = evercam.GetUser("joeyb");
 
-// Get list of all cameras of a user "joeyb" using OAuth2.0 Authentication
-List<Camera> usercameras = User.GetAllCameras("joeyb", new Auth(new OAuth2("accesstoken")));
-
-// Get list of all cameras of a user "joeyb" using Basic Authentication
-List<Camera> usercameras = User.GetAllCameras("joeyb", new Auth(new Basic("username", "password")));
+// Get list of cameras of a user "joeyb"
+List<Camera> cameras = evercam.GetCameras("joeyb");
 
 ```
 ### Camera
 ```c#
-// Get details of user's public 'publiccamera'
-Camera cam = Camera.Get("publiccamera");
+// Create new camera
+Camera c = new Camera()
+{
+    ID = "test",
+    Name = "Test Camera",
+    Owner = "joeyb",
+    IsPublic = true,
+    Timezone = "Europe/London",
+    Vendor = "tplink",
+    Endpoints = new List<string> { "http://123.123.123.123:8080" },
+    Snapshots = new Snapshots() { Jpg = "/jpg/image.jpg" },
+    Auth = new Auth(new Basic("user", "pass"))
+};
+evercam.CreateCamera(c);
 
-// Get details of user's private 'privatecamera'
-Camera cam = Camera.Get("privatecamera", new Auth(new Auth(new OAuth2("accesstoken")));
+// Get details of camera 'test'
+Camera camera = evercam.GetCamera("test");
 
-// Get live image data of 'privatecamera'
-byte[] imagedata = cam.GetLiveImage();
+// Get live image data of camera 'test'
+byte[] imagedata = camera.GetLiveImage();
 
 ```
 ### Vendor
 ```c#
-// Get vendor object by name
-Vendor ycam = new Vendor("ycam");
-String defaultUsername = ycam.GetFirmware("*").Auth.Basic.UserName;
-String defaultPassword = ycam.GetFirmware("*").Auth.Basic.Password;
-
 // Get a list of all camera vendors
-List<Vendor> vendors = Vendor.GetAll();
+List<Vendor> vendors = evercam.GetAllVendors();
+
+// Get list of vendors by name
+List<Vendor> vendors = evercam.GetVendorsByName("TP-Link Technologies");
 
 // Get list of vendors by mac address
-List<Vendor> vendors = Vendor.GetAllByMac("00:00:00");
+List<Vendor> vendors = evercam.GetVendorsByMac("54:E6:FC");
 
 ```
 ### Model
 ```c#
 // Get camera model by vendor and model id
-var model = Model.Get("ycam", "YCW005");
+Model model = evercam.GetModel("tplink", "*");
 string username = model.Defaults.Auth.Basic.UserName;
 string password = model.Defaults.Auth.Basic.Password;
 string jpg = model.Defaults.Snapshots.Jpg;
