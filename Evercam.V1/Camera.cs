@@ -7,7 +7,6 @@ using System.Net;
 using System.Text;
 using System.Web.Http;
 using System.Threading.Tasks;
-
 using RestSharp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -37,34 +36,34 @@ namespace Evercam.V1
         [JsonProperty("updated_at")]
         public long UpdatedAt { get; set; }
 
-        [JsonProperty("last_polled_at")]
+        [JsonProperty("last_polled_at", NullValueHandling = NullValueHandling.Ignore)]
         public long LastPolledAt { get; set; }
 
-        [JsonProperty("last_online_at")]
+        [JsonProperty("last_online_at", NullValueHandling = NullValueHandling.Ignore)]
         public long LastOnlineAt { get; set; }
 
-        [JsonProperty("timezone")]
+        [JsonProperty("timezone", NullValueHandling = NullValueHandling.Ignore)]
         public string Timezone { get; set; }
 
-        [JsonProperty("mac_address")]
+        [JsonProperty("mac_address", NullValueHandling = NullValueHandling.Ignore)]
         public string MacAddress{ get; set; }
 
-        [JsonProperty("endpoints")]
+        [JsonProperty("endpoints", NullValueHandling = NullValueHandling.Ignore)]
         public List<string> Endpoints { get; set; }
 
-        [JsonProperty("is_public")]
+        [JsonProperty("is_public", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsPublic { get; set; }
 
-        [JsonProperty("is_online")]
+        [JsonProperty("is_online", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsOnline { get; set; }
 
-        [JsonProperty("location")]
+        [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]
         public Location Location;
 
-        [JsonProperty("auth")]
+        [JsonProperty("auth", NullValueHandling = NullValueHandling.Ignore)]
         public Auth Auth;
 
-        [JsonProperty("snapshots")]
+        [JsonProperty("snapshots", NullValueHandling = NullValueHandling.Ignore)]
         public Snapshots Snapshots;
 
         public Camera Create(Auth auth, AuthMode mode)
@@ -87,12 +86,11 @@ namespace Evercam.V1
                     case HttpStatusCode.BadRequest:
                         throw new Exception(response.Content);
                 }
-
-                return JsonConvert.DeserializeObject<Camera>(response.Content);
+                return JObject.Parse(response.Content)["cameras"][0].ToObject<Camera>();//JsonConvert.DeserializeObject<Camera>(response.Content);
             }
             catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
         }
-
+        
         public Camera Delete(Auth auth, AuthMode mode)
         {
             try
