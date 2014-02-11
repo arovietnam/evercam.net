@@ -110,7 +110,7 @@ namespace Evercam.V1
                         throw new Exception(response.Content);
                 }
 
-                return JsonConvert.DeserializeObject<Camera>(response.Content);
+                return JObject.Parse(response.Content)["cameras"][0].ToObject<Camera>();//JsonConvert.DeserializeObject<Camera>(response.Content);
             }
             catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
         }
@@ -136,7 +136,7 @@ namespace Evercam.V1
                         throw new Exception(response.Content);
                 }
 
-                return JsonConvert.DeserializeObject<Camera>(response.Content);
+                return JObject.Parse(response.Content)["cameras"][0].ToObject<Camera>();//JsonConvert.DeserializeObject<Camera>(response.Content);
             }
             catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
         }
