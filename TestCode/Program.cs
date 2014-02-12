@@ -13,23 +13,23 @@ namespace Test
         {
             Camera c = new Camera()
             {
-                ID = "hikvisiontest",
-                Name = "Test Hikvision",
-                Owner = "shakeelanjum",
+                ID = "test",
+                Name = "Test Camera",
+                Owner = "joeyb",
                 IsPublic = true,
                 Timezone = "Asia/Karachi",
-                Vendor = "Hikvision",
-                Endpoints = new List<string> { "http://192.168.0.1:80" },
+                Vendor = "TP-Link",
+                Endpoints = new List<string> { "http://123.123.123.123:8080" },
                 Snapshots = new Snapshots() { Jpg = "/jpg/image.jpg" },
-                Auth = new Auth(new Basic("admin", "12345"))
+                Auth = new Auth(new Basic("admin", "admin"))
             };
 
-            Evercam evercam = new Evercam("shakeelanjum", "asdf1234");
+            Evercam evercam = new Evercam("joeyb_access_token");
             evercam.CreateCamera(c);
-            c = evercam.GetCamera("hikvision");
+            c = evercam.GetCamera("test");
             var data = c.GetLiveImage();
             evercam.DeleteCamera(c.ID);
-            List<Camera> cameras = evercam.GetCameras("shakeelanjum");
+            List<Camera> cameras = evercam.GetCameras("joeyb");
         }
     }
 }

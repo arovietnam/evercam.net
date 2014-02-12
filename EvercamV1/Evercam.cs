@@ -83,7 +83,7 @@ namespace EvercamV1
                         list.Add(v);
                 }
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+            catch (Exception x) { throw new EvercamException(x.Message); }
 
             return list;
         }
@@ -138,12 +138,12 @@ namespace EvercamV1
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content);
                 }
 
                 return JObject.Parse(response.Content)["models"].ToObject<List<Model>>().FirstOrDefault<Model>();
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+            catch (Exception x) { throw new EvercamException(x.Message); }
         }
 
         #endregion
@@ -180,12 +180,12 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.NotFound:
                     case HttpStatusCode.Unauthorized:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content);
                 }
 
                 return JObject.Parse(response.Content)["users"].ToObject<List<User>>().FirstOrDefault<User>();
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+            catch (Exception x) { throw new EvercamException(x.Message); }
         }
 
         /// <summary>
@@ -205,12 +205,12 @@ namespace EvercamV1
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.BadRequest:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content);
                 }
 
                 return JObject.Parse(response.Content)["users"].ToObject<List<User>>().FirstOrDefault<User>();
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+            catch (Exception x) { throw new EvercamException(x.Message); }
         }
 
         /// <summary>
@@ -230,12 +230,12 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content);
                 }
 
                 return response.Content;
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+            catch (Exception x) { throw new EvercamException(x.Message); }
         }
 
         /// <summary>
@@ -257,12 +257,12 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content);
                 }
 
                 return JObject.Parse(response.Content)["users"].ToObject<List<User>>().FirstOrDefault<User>();
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+            catch (Exception x) { throw new EvercamException(x.Message); }
         }
 
         /// <summary>
@@ -307,12 +307,12 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content);
                 }
 
                 return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+            catch (Exception x) { throw new EvercamException(x.Message); }
         }
 
         /// <summary>
@@ -334,12 +334,12 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content);
                 }
 
                 return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+            catch (Exception x) { throw new EvercamException(x.Message); }
         }
 
         /// <summary>
@@ -359,12 +359,12 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content);
                 }
 
                 return response.Content;
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+            catch (Exception x) { throw new EvercamException(x.Message); }
         }
 
         /// <summary>
