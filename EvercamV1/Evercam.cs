@@ -83,7 +83,7 @@ namespace EvercamV1
                         list.Add(v);
                 }
             }
-            catch (Exception x) { throw new EvercamException(x.Message); }
+            catch (Exception x) { throw new EvercamException(x); }
 
             return list;
         }
@@ -133,7 +133,7 @@ namespace EvercamV1
             {
                 var request = new RestRequest(string.Format(API.MODELS_VENDOR_MODEL, vendorId, modelId), Method.GET);
                 request.RequestFormat = DataFormat.Json;
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
@@ -143,7 +143,7 @@ namespace EvercamV1
 
                 return JObject.Parse(response.Content)["models"].ToObject<List<Model>>().FirstOrDefault<Model>();
             }
-            catch (Exception x) { throw new EvercamException(x.Message); }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         #endregion
@@ -174,7 +174,7 @@ namespace EvercamV1
                 var request = new RestRequest(string.Format(API.USERS_ID, id), Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
@@ -185,7 +185,7 @@ namespace EvercamV1
 
                 return JObject.Parse(response.Content)["users"].ToObject<List<User>>().FirstOrDefault<User>();
             }
-            catch (Exception x) { throw new EvercamException(x.Message); }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace EvercamV1
                 request.AddParameter("text/json", JsonConvert.SerializeObject(user), ParameterType.RequestBody);
                 request.RequestFormat = DataFormat.Json;
 
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
@@ -210,7 +210,7 @@ namespace EvercamV1
 
                 return JObject.Parse(response.Content)["users"].ToObject<List<User>>().FirstOrDefault<User>();
             }
-            catch (Exception x) { throw new EvercamException(x.Message); }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>
@@ -224,7 +224,7 @@ namespace EvercamV1
             {
                 var request = new RestRequest(string.Format(API.USERS_ID, id), Method.DELETE);
 
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
@@ -235,7 +235,7 @@ namespace EvercamV1
 
                 return response.Content;
             }
-            catch (Exception x) { throw new EvercamException(x.Message); }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace EvercamV1
                 request.AddParameter("text/json", JsonConvert.SerializeObject(user), ParameterType.RequestBody);
                 request.RequestFormat = DataFormat.Json;
 
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
@@ -262,7 +262,7 @@ namespace EvercamV1
 
                 return JObject.Parse(response.Content)["users"].ToObject<List<User>>().FirstOrDefault<User>();
             }
-            catch (Exception x) { throw new EvercamException(x.Message); }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>
@@ -301,7 +301,7 @@ namespace EvercamV1
                 request.AddParameter("text/json", JsonConvert.SerializeObject(camera), ParameterType.RequestBody);
                 request.RequestFormat = DataFormat.Json;
 
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
@@ -312,7 +312,7 @@ namespace EvercamV1
 
                 return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
             }
-            catch (Exception x) { throw new EvercamException(x.Message); }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace EvercamV1
                 request.AddParameter("text/json", JsonConvert.SerializeObject(camera), ParameterType.RequestBody);
                 request.RequestFormat = DataFormat.Json;
 
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
@@ -339,7 +339,7 @@ namespace EvercamV1
 
                 return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
             }
-            catch (Exception x) { throw new EvercamException(x.Message); }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>
@@ -353,7 +353,7 @@ namespace EvercamV1
             {
                 var request = new RestRequest(string.Format(API.CAMERAS_ID, id), Method.DELETE);
 
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
@@ -364,7 +364,7 @@ namespace EvercamV1
 
                 return response.Content;
             }
-            catch (Exception x) { throw new EvercamException(x.Message); }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>
@@ -436,17 +436,17 @@ namespace EvercamV1
             {
                 var request = new RestRequest(url, Method.GET);
                 request.RequestFormat = DataFormat.Json;
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content);
                 }
 
                 return JObject.Parse(response.Content)["vendors"].ToObject<List<Vendor>>();
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>
@@ -462,22 +462,22 @@ namespace EvercamV1
                 request.RequestFormat = DataFormat.Json;
 
                 if (_auth != null && _auth.OAuth2 != null && !string.IsNullOrEmpty(_auth.OAuth2.AccessToken))
-                    API.Client.Authenticator = new HttpOAuth2Authenticator(_auth.OAuth2.AccessToken, _auth.OAuth2.TokenType);
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(_auth.OAuth2.AccessToken, _auth.OAuth2.TokenType);
                 else if (_auth != null && _auth.Basic != null && !string.IsNullOrEmpty(_auth.Basic.UserName))
-                    API.Client.Authenticator = new HttpBasicAuthenticator(_auth.Basic.UserName, _auth.Basic.Password);
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(_auth.Basic.UserName, _auth.Basic.Password);
 
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
                     case HttpStatusCode.Unauthorized:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content);
                 }
 
                 return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         #endregion

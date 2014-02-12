@@ -69,21 +69,21 @@ namespace EvercamV1
 
         public byte[] GetLiveImage(string streamUrl)
         {
-            string baseUrl = API.Client.BaseUrl;
-            IAuthenticator apiAuth = API.Client.Authenticator;
+            string baseUrl = API.Client.Value.BaseUrl;
+            IAuthenticator apiAuth = API.Client.Value.Authenticator;
             try
             {
 
-                API.Client.BaseUrl = streamUrl;
+                API.Client.Value.BaseUrl = streamUrl;
                 var request = new RestRequest(Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
                 if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken);
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken);
                 if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
 
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
@@ -92,26 +92,26 @@ namespace EvercamV1
                 }
                 return response.RawBytes;
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
-            finally { API.Client.BaseUrl = baseUrl; API.Client.Authenticator = apiAuth; }
+            catch (Exception x) { throw new EvercamException(x); }
+            finally { API.Client.Value.BaseUrl = baseUrl; API.Client.Value.Authenticator = apiAuth; }
         }
 
         public byte[] GetLiveImage()
         {
-            string baseUrl = API.Client.BaseUrl;
-            IAuthenticator apiAuth = API.Client.Authenticator;
+            string baseUrl = API.Client.Value.BaseUrl;
+            IAuthenticator apiAuth = API.Client.Value.Authenticator;
             try
             {
-                API.Client.BaseUrl = Endpoints[0] + Snapshots.Jpg;
+                API.Client.Value.BaseUrl = Endpoints[0] + Snapshots.Jpg;
                 var request = new RestRequest(Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
                 if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken);
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken);
                 if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
 
-                var response = API.Client.Execute(request);
+                var response = API.Client.Value.Execute(request);
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
@@ -120,8 +120,8 @@ namespace EvercamV1
                 }
                 return response.RawBytes;
             }
-            catch (Exception x) { throw new Exception("Error Occured: " + x.Message); }
-            finally { API.Client.BaseUrl = baseUrl; API.Client.Authenticator = apiAuth; }
+            catch (Exception x) { throw new EvercamException(x); }
+            finally { API.Client.Value.BaseUrl = baseUrl; API.Client.Value.Authenticator = apiAuth; }
         }
     }
 

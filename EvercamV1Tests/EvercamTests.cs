@@ -94,7 +94,7 @@ namespace EvercamV1.Tests
         public void GetCamerasTest()
         {
             List<Camera> cameras = evercam.GetCameras("shakeelanjum");
-            Assert.AreEqual(13, cameras.Count);
+            Assert.AreEqual(14, cameras.Count);
         }
 
         [TestMethod()]
