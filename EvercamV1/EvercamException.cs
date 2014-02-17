@@ -12,7 +12,7 @@ namespace EvercamV1
 
         public EvercamException(string message): base(message) { }
 
-        public EvercamException(Exception x) : base(x.Message, x) { }
+        public EvercamException(Exception x) : base(x.Message, x.InnerException) { }
 
         public EvercamException(string message, Exception innerException): base(message, innerException) { }
 

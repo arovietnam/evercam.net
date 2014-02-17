@@ -33,16 +33,13 @@ namespace EvercamV1
         public const string CAMERAS_TIMESTAMP = "cameras/{0}/snapshots/{1}.json";
 
         // Declares static instance field with custom default value
-        public static ThreadLocal<RestClient> Client = new ThreadLocal<RestClient>(() => new RestClient(LIVE_URL));
+        public static ThreadLocal<RestClient> Client = new ThreadLocal<RestClient>(() => { return new RestClient(LIVE_URL); });
 
         /// <summary>
         /// Sets RestClient's authentication with provided auth details
         /// </summary>
         public static void SetClientAuth(Auth auth)
         {
-            if (!Client.IsValueCreated)
-                Client = new ThreadLocal<RestClient>(() => new RestClient(LIVE_URL));
-
             if (auth != null && auth.OAuth2 != null && !string.IsNullOrEmpty(auth.OAuth2.AccessToken))
                 Client.Value.Authenticator = new HttpOAuth2Authenticator(auth.OAuth2.AccessToken, auth.OAuth2.TokenType);
             else if (auth != null && auth.Basic != null && !string.IsNullOrEmpty(auth.Basic.UserName))

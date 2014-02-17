@@ -28,7 +28,7 @@ namespace EvercamV1
         /// Initialize Evercam without any user authentication details. 
         /// User can only access public resources from Evercam.
         /// </summary>
-        public Evercam() { }
+        public Evercam() {  }
 
         /// <summary>
         /// Initializes Evercam with user's Basic authentication details
@@ -38,7 +38,14 @@ namespace EvercamV1
         public Evercam(string username, string password)
         {
             _auth.Basic = new Basic(username, password);
-            API.SetClientAuth(_auth);
+            try
+            {
+                API.SetClientAuth(_auth);
+            }
+            catch (TypeInitializationException x)
+            {
+                throw new EvercamException("File not found. Initialization requires RestSharp.dll to be included in project.", x.InnerException);
+            }
         }
 
         /// <summary>
@@ -48,7 +55,14 @@ namespace EvercamV1
         public Evercam(string accesstoken)
         {
             _auth.OAuth2 = new OAuth2(accesstoken);
-            API.SetClientAuth(_auth);
+            try
+            {
+                API.SetClientAuth(_auth);
+            }
+            catch (TypeInitializationException x)
+            {
+                throw new EvercamException("File not found. Initialization requires RestSharp.dll to be included in project.", x.InnerException);
+            }
         }
 
         #endregion
@@ -138,7 +152,7 @@ namespace EvercamV1
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
-                        throw new EvercamException(response.Content);
+                        throw new EvercamException(response.Content, response.ErrorException);
                 }
 
                 return JObject.Parse(response.Content)["models"].ToObject<List<Model>>().FirstOrDefault<Model>();
@@ -180,7 +194,7 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.NotFound:
                     case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content);
+                        throw new EvercamException(response.Content, response.ErrorException);
                 }
 
                 return JObject.Parse(response.Content)["users"].ToObject<List<User>>().FirstOrDefault<User>();
@@ -205,7 +219,7 @@ namespace EvercamV1
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.BadRequest:
-                        throw new EvercamException(response.Content);
+                        throw new EvercamException(response.Content, response.ErrorException);
                 }
 
                 return JObject.Parse(response.Content)["users"].ToObject<List<User>>().FirstOrDefault<User>();
@@ -230,7 +244,7 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content);
+                        throw new EvercamException(response.Content, response.ErrorException);
                 }
 
                 return response.Content;
@@ -257,7 +271,7 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content);
+                        throw new EvercamException(response.Content, response.ErrorException);
                 }
 
                 return JObject.Parse(response.Content)["users"].ToObject<List<User>>().FirstOrDefault<User>();
@@ -307,7 +321,7 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content);
+                        throw new EvercamException(response.Content, response.ErrorException);
                 }
 
                 return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
@@ -334,7 +348,7 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content);
+                        throw new EvercamException(response.Content, response.ErrorException);
                 }
 
                 return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
@@ -359,7 +373,7 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content);
+                        throw new EvercamException(response.Content, response.ErrorException);
                 }
 
                 return response.Content;

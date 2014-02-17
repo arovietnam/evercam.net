@@ -88,10 +88,11 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.NotFound:
                     case HttpStatusCode.Unauthorized:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content, response.ErrorException);
                 }
                 return response.RawBytes;
             }
+            catch (EvercamException x) { throw; }
             catch (Exception x) { throw new EvercamException(x); }
             finally { API.Client.Value.BaseUrl = baseUrl; API.Client.Value.Authenticator = apiAuth; }
         }
@@ -116,10 +117,11 @@ namespace EvercamV1
                 {
                     case HttpStatusCode.NotFound:
                     case HttpStatusCode.Unauthorized:
-                        throw new Exception(response.Content);
+                        throw new EvercamException(response.Content, response.ErrorException);
                 }
                 return response.RawBytes;
             }
+            catch (EvercamException x) { throw; }
             catch (Exception x) { throw new EvercamException(x); }
             finally { API.Client.Value.BaseUrl = baseUrl; API.Client.Value.Authenticator = apiAuth; }
         }
