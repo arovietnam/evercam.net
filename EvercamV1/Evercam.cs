@@ -15,12 +15,9 @@ namespace EvercamV1
     /// </summary>
     public class Evercam
     {
-        private Auth _auth = new Auth();
-        public Auth Auth
-        {
-            get { return _auth; }
-            set { _auth = value; }
-        }
+        public Auth Auth { get; set; }
+
+        public EvercamClient Client { get; set; }
 
         #region CONSTRUCTORS
 
@@ -37,10 +34,10 @@ namespace EvercamV1
         /// <param name="password">User Password</param>
         public Evercam(string username, string password)
         {
-            _auth.Basic = new Basic(username, password);
+            Auth.Basic = new Basic(username, password);
             try
             {
-                API.SetClientAuth(_auth);
+                API.SetClientAuth(Auth);
             }
             catch (TypeInitializationException x)
             {
@@ -54,10 +51,10 @@ namespace EvercamV1
         /// <param name="accesstoken"></param>
         public Evercam(string accesstoken)
         {
-            _auth.OAuth2 = new OAuth2(accesstoken);
+            Auth.OAuth2 = new OAuth2(accesstoken);
             try
             {
-                API.SetClientAuth(_auth);
+                API.SetClientAuth(Auth);
             }
             catch (TypeInitializationException x)
             {
@@ -65,8 +62,117 @@ namespace EvercamV1
             }
         }
 
+        /// <summary>
+        /// Initializes Evercam with Client credentials
+        /// </summary>
+        /// <param name="client"></param>
+        public Evercam(EvercamClient client)
+        {
+            Client = client;
+        }
+
         #endregion
 
+
+        #region Auth
+        
+        /// <summary>
+        /// Returns new access token details resulted from the auth. code exchange request to Evercam. 
+        /// It also updates Auth values with new access token details. 
+        /// Method requires Client details to be set before this call.
+        /// </summary>
+        /// <param name="authCode">Client request auth. code</param>
+        /// <returns>ResponseToken</returns>
+        public ResponseToken GetAccessToken(string authCode)
+        {
+            // checks if application has already set its Client credentials or not
+            if (Client == null)
+                throw new EvercamException("Client details not presented (ID, Secret, Redirect Uri)");
+
+            // prepares access token request
+            AccessTokenRequest access = new AccessTokenRequest();
+            access.ClientID = Client.ID;
+            access.Secret = Client.Secret;
+            access.RedirectUri = Client.RedirectUri;
+            access.Code = authCode;
+            access.GrantType = API.ACCESS_GRANT_TYPE;
+
+            try
+            {
+                var request = new RestRequest(API.TOKEN, Method.POST);
+                request.AddParameter("text/json", JsonConvert.SerializeObject(access), ParameterType.RequestBody);
+                request.RequestFormat = DataFormat.Json;
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.BadRequest:
+                        throw new EvercamException(response.Content, response.ErrorException);
+                }
+                
+                // receives response token and updates OAuth2 instance values
+                ResponseToken token = JObject.Parse(response.Content)["tokens"].ToObject<List<ResponseToken>>().FirstOrDefault<ResponseToken>();
+                Auth.OAuth2.AccessToken = token.AccessToken;
+                Auth.OAuth2.TokenType = token.TokenType;
+                Auth.OAuth2.ExpiresIn = token.ExpiresIn;
+
+                return token;
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Returns new access token details resulted from the refresh token exchange request to Evercam. 
+        /// It also updates Auth values with new access token details. 
+        /// Method requires Client details to be set before this call.
+        /// </summary>
+        /// <param name="refreshToken">Client refresh token</param>
+        /// <returns>ResponseToken</returns>
+        public ResponseToken GetRefreshToken(string refreshToken)
+        {
+            // checks if application has already set its Client credentials or not
+            if (Client == null)
+                throw new EvercamException("Client details not presented (ID, Secret, Redirect Uri)");
+
+            // prepares refresh token request
+            RefreshTokenRequest access = new RefreshTokenRequest();
+            access.ClientID = Client.ID;
+            access.Secret = Client.Secret;
+            access.RefreshToken = refreshToken;
+            access.GrantType = API.REFRESH_TOKEN_TYPE;
+
+            try
+            {
+                var request = new RestRequest(API.TOKEN, Method.POST);
+                request.AddParameter("text/json", JsonConvert.SerializeObject(access), ParameterType.RequestBody);
+                request.RequestFormat = DataFormat.Json;
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.BadRequest:
+                        throw new EvercamException(response.Content, response.ErrorException);
+                }
+
+                // receives response token and updates OAuth2 instance values
+                ResponseToken token = JObject.Parse(response.Content)["tokens"].ToObject<List<ResponseToken>>().FirstOrDefault<ResponseToken>();
+                Auth.OAuth2.AccessToken = token.AccessToken;
+                Auth.OAuth2.TokenType = token.TokenType;
+                Auth.OAuth2.ExpiresIn = token.ExpiresIn;
+
+                if (string.IsNullOrEmpty(token.TokenType))
+                    token.TokenType = Auth.OAuth2.TokenType;
+                
+                return token;
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        #endregion
 
         #region VENDORS
 
@@ -193,6 +299,7 @@ namespace EvercamV1
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
+                    case HttpStatusCode.Forbidden:
                     case HttpStatusCode.Unauthorized:
                         throw new EvercamException(response.Content, response.ErrorException);
                 }
@@ -242,6 +349,7 @@ namespace EvercamV1
 
                 switch (response.StatusCode)
                 {
+                    case HttpStatusCode.Forbidden:
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
                         throw new EvercamException(response.Content, response.ErrorException);
@@ -269,6 +377,7 @@ namespace EvercamV1
 
                 switch (response.StatusCode)
                 {
+                    case HttpStatusCode.Forbidden:
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
                         throw new EvercamException(response.Content, response.ErrorException);
@@ -319,6 +428,7 @@ namespace EvercamV1
 
                 switch (response.StatusCode)
                 {
+                    case HttpStatusCode.Forbidden:
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
                         throw new EvercamException(response.Content, response.ErrorException);
@@ -346,6 +456,7 @@ namespace EvercamV1
 
                 switch (response.StatusCode)
                 {
+                    case HttpStatusCode.Forbidden:
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
                         throw new EvercamException(response.Content, response.ErrorException);
@@ -371,6 +482,7 @@ namespace EvercamV1
 
                 switch (response.StatusCode)
                 {
+                    case HttpStatusCode.Forbidden:
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
                         throw new EvercamException(response.Content, response.ErrorException);
@@ -475,15 +587,16 @@ namespace EvercamV1
                 var request = new RestRequest(url, Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
-                if (_auth != null && _auth.OAuth2 != null && !string.IsNullOrEmpty(_auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(_auth.OAuth2.AccessToken, _auth.OAuth2.TokenType);
-                else if (_auth != null && _auth.Basic != null && !string.IsNullOrEmpty(_auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(_auth.Basic.UserName, _auth.Basic.Password);
+                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
+                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
 
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
+                    case HttpStatusCode.Forbidden:
                     case HttpStatusCode.NotFound:
                     case HttpStatusCode.Unauthorized:
                         throw new EvercamException(response.Content);

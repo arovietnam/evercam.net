@@ -60,6 +60,7 @@
     <Compile Include="API.cs" />
     <Compile Include="Auth.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Client.cs" />
     <Compile Include="Evercam.cs" />
     <Compile Include="EvercamException.cs" />
     <Compile Include="HttpOAuth2Authenticator.cs" />

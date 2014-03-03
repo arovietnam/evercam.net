@@ -17,7 +17,13 @@ namespace EvercamV1
         // Server Script: https://github.com/evercam/tools/blob/master/mockserver/mockserver.js
         public const string MOCK_URL = "http://proxy.evercam.io:3000/v1/";
 
+        internal const string ACCESS_GRANT_TYPE = "authorization_code";
+        internal const string REFRESH_TOKEN_TYPE = "refresh_token";
+
         // API Endpoints
+        public const string AUTH = "oauth/authorize";
+        public const string TOKEN = "oauth/token";
+        public const string REVOKE = "oauth/revoke";
         public const string VENDORS = "vendors.json";
         public const string VENDORS_MAC = "vendors/{0}.json";
         public const string MODELS = "models.json";
@@ -33,12 +39,12 @@ namespace EvercamV1
         public const string CAMERAS_TIMESTAMP = "cameras/{0}/snapshots/{1}.json";
 
         // Declares static instance field with custom default value
-        public static ThreadLocal<RestClient> Client = new ThreadLocal<RestClient>(() => { return new RestClient(LIVE_URL); });
+        internal static ThreadLocal<RestClient> Client = new ThreadLocal<RestClient>(() => { return new RestClient(LIVE_URL); });
 
         /// <summary>
         /// Sets RestClient's authentication with provided auth details
         /// </summary>
-        public static void SetClientAuth(Auth auth)
+        internal static void SetClientAuth(Auth auth)
         {
             if (auth != null && auth.OAuth2 != null && !string.IsNullOrEmpty(auth.OAuth2.AccessToken))
                 Client.Value.Authenticator = new HttpOAuth2Authenticator(auth.OAuth2.AccessToken, auth.OAuth2.TokenType);

@@ -57,12 +57,12 @@ namespace EvercamV1
 
     public class OAuth2
     {
-        [JsonProperty("access_token")]
+        [JsonProperty("token_type", NullValueHandling = NullValueHandling.Ignore)]
         public string AccessToken { get; set; }
         [JsonProperty("token_type", NullValueHandling = NullValueHandling.Ignore)]
         public string TokenType { get; set; }
         [JsonProperty("expires_in", NullValueHandling = NullValueHandling.Ignore)]
-        public long ExpiresIn { get; set; }
+        public int ExpiresIn { get; set; }
 
         public OAuth2()
         {
@@ -82,7 +82,7 @@ namespace EvercamV1
             ExpiresIn = 3599;
         }
 
-        public OAuth2(string accesstoken, string tokentype, long expiresin)
+        public OAuth2(string accesstoken, string tokentype, int expiresin)
         {
             AccessToken = accesstoken;
             TokenType = tokentype;

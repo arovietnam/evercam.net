@@ -7,13 +7,29 @@ Right click on EvercamV1.dll (link above) and Save Link As...
 ```c#
 using EvercamV1;
 ...
-// OAuth2.0 access token for user "joeyb"
-Evercam evercam = new Evercam("access_token");
+
+// Instantiate Evercam API
+Evercam evercam = new Evercam();
+
+```
+### Authentication (OAuth2.0)
+```c#
+// Present client's credentials
+evercam.Client = new EvercamClient("client_id", "client_secret", "redirect_uri");
+
+// First time exchange of auth. code to get acccess_token and refresh_token
+// It pupulates OAuth2 with new access_token for future use
+ResponseToken access_token = evercam.GetAccessToken("auth_code");
+
+// OR if access_token is already obtained BUT expired, then refreshes access_token
+// It pupulates OAuth2 with new access_token for future use
+ResponseToken refresh_token = evercam.GetRefreshToken("refresh_token");
 
 ```
 ### User
 ```c#
-// Get information of user "joeyb"
+// Get basic profile details of authenticated user "joeyb"
+// Uses OAuth2 credentials for making request to such authenticated resources
 User user = evercam.GetUser("joeyb");
 
 // Get list of cameras of a user "joeyb"

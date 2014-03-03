@@ -73,7 +73,6 @@ namespace EvercamV1
             IAuthenticator apiAuth = API.Client.Value.Authenticator;
             try
             {
-
                 API.Client.Value.BaseUrl = streamUrl;
                 var request = new RestRequest(Method.GET);
                 request.RequestFormat = DataFormat.Json;
