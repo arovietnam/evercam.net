@@ -11,24 +11,19 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            Evercam evercam = new Evercam("joeyb", "1234");
-            Camera c = new Camera()
+            Evercam evercam = new Evercam(new EvercamClient("c298268b", "600736690c93646b89e3230480978629", "http://1button.info/"));
+            evercam = new Evercam("sajjadkhan", "asdf");
+            CameraInfo c = new CameraInfo()
             {
-                ID = "hikvision",
-                Name = "Hikvision",
-                Owner = "joeyb",
-                IsPublic = false,
-                Timezone = "Etc/UTC",
-                Vendor = "Hikvision",
-                Endpoints = new List<string> { "http://somedydns.com:8080" },
-                Snapshots = new Snapshots() { Jpg = "/Streaming/picture" },
-                Auth = new Auth(new Basic("admin", "admin"))
+                ID = "harbourtest",
+                Name = "Sajjad Office",
+                IsPublic = true,
+                ExternalUrl = "http://pp9.no-ip.org:8001",
+                JpgUrl = "/Streaming/channels/1/picture",
+                Username = "user",
+                Password = "user"
             };
-            c = evercam.CreateCamera(c);
-            c = evercam.GetCamera("hikvision");
-            var data = c.GetLiveImage();
-            evercam.DeleteCamera(c.ID);
-            List<Camera> cameras = evercam.GetCameras("joeyb");
+            evercam.UpdateCamera(c);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace EvercamV1
         /// Initialize Evercam without any user authentication details. 
         /// User can only access public resources from Evercam.
         /// </summary>
-        public Evercam() {  }
+        public Evercam() { Auth = new EvercamV1.Auth(); }
 
         /// <summary>
         /// Initializes Evercam with user's Basic authentication details
@@ -34,6 +34,7 @@ namespace EvercamV1
         /// <param name="password">User Password</param>
         public Evercam(string username, string password)
         {
+            if (Auth == null) Auth = new EvercamV1.Auth();
             Auth.Basic = new Basic(username, password);
             try
             {
@@ -51,6 +52,7 @@ namespace EvercamV1
         /// <param name="accesstoken"></param>
         public Evercam(string accesstoken)
         {
+            if (Auth == null) Auth = new EvercamV1.Auth();
             Auth.OAuth2 = new OAuth2(accesstoken);
             try
             {
@@ -74,7 +76,7 @@ namespace EvercamV1
         #endregion
 
 
-        #region Auth
+        #region OAuth2 Grant-Code-Flow
         
         /// <summary>
         /// Returns new access token details resulted from the auth. code exchange request to Evercam. 
@@ -87,7 +89,7 @@ namespace EvercamV1
         {
             // checks if application has already set its Client credentials or not
             if (Client == null)
-                throw new EvercamException("Client details not presented (ID, Secret, Redirect Uri)");
+                throw new EvercamException("Client credentials not presented (ID, Secret, Redirect Uri)");
 
             // prepares access token request
             AccessTokenRequest access = new AccessTokenRequest();
@@ -134,7 +136,7 @@ namespace EvercamV1
         {
             // checks if application has already set its Client credentials or not
             if (Client == null)
-                throw new EvercamException("Client details not presented (ID, Secret, Redirect Uri)");
+                throw new EvercamException("Client credentials not presented (ID, Secret, Redirect Uri)");
 
             // prepares refresh token request
             RefreshTokenRequest access = new RefreshTokenRequest();
@@ -293,7 +295,9 @@ namespace EvercamV1
             {
                 var request = new RestRequest(string.Format(API.USERS_ID, id), Method.GET);
                 request.RequestFormat = DataFormat.Json;
-
+                
+                AddClientCredentials(request, true);
+                
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
@@ -344,7 +348,7 @@ namespace EvercamV1
             try
             {
                 var request = new RestRequest(string.Format(API.USERS_ID, id), Method.DELETE);
-
+                AddClientCredentials(request, true);
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
@@ -372,7 +376,7 @@ namespace EvercamV1
                 var request = new RestRequest(string.Format(API.USERS_ID, user.ID), Method.PATCH);
                 request.AddParameter("text/json", JsonConvert.SerializeObject(user), ParameterType.RequestBody);
                 request.RequestFormat = DataFormat.Json;
-
+                AddClientCredentials(request, true);
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
@@ -403,25 +407,16 @@ namespace EvercamV1
         #region CAMERAS
 
         /// <summary>
-        /// Returns all data for a given camera
+        /// Tests if given camera parameters are correct
         /// </summary>
-        /// <param name="id">Camera ID</param>
-        /// <returns>Camera Details</returns>
-        public Camera GetCamera(string id)
-        {
-            return GetAllCameras(string.Format(API.CAMERAS_ID, id)).FirstOrDefault<Camera>();
-        }
-
-        /// <summary>
-        /// Creates a new camera owned by the authenticating user
-        /// </summary>
-        /// <returns>Returns new camera details upon success</returns>
-        public Camera CreateCamera(Camera camera)
+        /// <param name="info">Camera information to test</param>
+        /// <returns>Returns Camera Details</returns>
+        public Camera TestCamera(CameraTestInfo info)
         {
             try
             {
-                var request = new RestRequest(API.CAMERAS, Method.POST);
-                request.AddParameter("text/json", JsonConvert.SerializeObject(camera), ParameterType.RequestBody);
+                var request = new RestRequest(API.CAMERAS_TEST, Method.GET);
+                request.AddParameter("text/json", JsonConvert.SerializeObject(info), ParameterType.RequestBody);
                 request.RequestFormat = DataFormat.Json;
 
                 var response = API.Client.Value.Execute(request);
@@ -440,18 +435,56 @@ namespace EvercamV1
         }
 
         /// <summary>
-        /// Updates full or partial data for an existing camera
+        /// Returns all data for a given camera
         /// </summary>
-        /// <param name="camera">Camera Details</param>
-        /// <returns>User Details</returns>
-        public Camera UpdateCamera(Camera camera)
+        /// <param name="id">Camera ID</param>
+        /// <returns>Returns Camera Details</returns>
+        public Camera GetCamera(string id)
+        {
+            return GetAllCameras(string.Format(API.CAMERAS_ID, id)).FirstOrDefault<Camera>();
+        }
+
+        /// <summary>
+        /// Creates a new camera owned by the authenticating user
+        /// </summary>
+        /// <param name="info">New Camera Information</param>
+        /// <returns>Returns new camera details upon success</returns>
+        public Camera CreateCamera(CameraInfo info)
         {
             try
             {
-                var request = new RestRequest(string.Format(API.CAMERAS_ID, camera.ID), Method.PATCH);
-                request.AddParameter("text/json", JsonConvert.SerializeObject(camera), ParameterType.RequestBody);
+                var request = new RestRequest(API.CAMERAS, Method.POST);
+                request.AddParameter("text/json", JsonConvert.SerializeObject(info), ParameterType.RequestBody);
                 request.RequestFormat = DataFormat.Json;
+                AddClientCredentials(request, true);
+                var response = API.Client.Value.Execute(request);
 
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Forbidden:
+                    case HttpStatusCode.BadRequest:
+                    case HttpStatusCode.Unauthorized:
+                        throw new EvercamException(response.Content, response.ErrorException);
+                }
+
+                return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Updates full or partial data for an existing camera
+        /// </summary>
+        /// <param name="info">Updated Camera Information</param>
+        /// <returns>User Details</returns>
+        public Camera UpdateCamera(CameraInfo info)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_ID, info.ID), Method.PATCH);
+                request.AddParameter("text/json", JsonConvert.SerializeObject(info), ParameterType.RequestBody);
+                request.RequestFormat = DataFormat.Json;
+                AddClientCredentials(request, true);
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
@@ -477,7 +510,7 @@ namespace EvercamV1
             try
             {
                 var request = new RestRequest(string.Format(API.CAMERAS_ID, id), Method.DELETE);
-
+                AddClientCredentials(request, true);
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
@@ -586,11 +619,13 @@ namespace EvercamV1
             {
                 var request = new RestRequest(url, Method.GET);
                 request.RequestFormat = DataFormat.Json;
-
+                
                 if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
                     API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
                 else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
                     API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+
+                AddClientCredentials(request, true);
 
                 var response = API.Client.Value.Execute(request);
 
@@ -605,6 +640,22 @@ namespace EvercamV1
                 return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
             }
             catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Adds client credentials as parameters to given request
+        /// </summary>
+        /// <param name="request">RestRequest</param>
+        /// <param name="forceCredentials">Make sure if request requires client credentials as must, errors if not specified</param>
+        private void AddClientCredentials(RestRequest request, bool forceCredentials)
+        {
+            if (forceCredentials && Client == null)
+                throw new EvercamException("Client credentials not presented (ID, Secret, Redirect Uri)");
+
+            if (Client != null) {
+                request.Parameters.Add(new Parameter() { Name = "api_id", Value = Client.ID, Type = ParameterType.GetOrPost });
+                request.Parameters.Add(new Parameter() { Name = "api_key", Value = Client.Secret, Type = ParameterType.GetOrPost });
+            }
         }
 
         #endregion

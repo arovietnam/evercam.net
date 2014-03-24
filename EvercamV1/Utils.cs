@@ -32,5 +32,30 @@ namespace EvercamV1
             }
             return timeZone;
         }
+
+        /// <summary>
+        /// Convet MS DateTime to equivalent Unix Timestamp
+        /// </summary>
+        /// <param name="datetime">MS .Net DateTime</param>
+        /// <returns>Unix Timestamp</returns>
+        public static long ToUnixTimestamp(DateTime datetime)
+        {
+            var date = new DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
+            var unixTimestamp = System.Convert.ToInt64((datetime - date).TotalSeconds);
+
+            return unixTimestamp;
+        }
+
+        /// <summary>
+        /// Convert Unix Timestamp to equivalent MS DateTime
+        /// </summary>
+        /// <param name="timestamp">Unix Timestamp</param>
+        /// <returns>MS .Net DateTime</returns>
+        public static DateTime ToMsDateTime(long timestamp)
+        {
+            var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
+
+            return dateTime.AddSeconds(timestamp);
+        }
     }
 }

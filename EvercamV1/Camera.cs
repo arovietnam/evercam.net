@@ -126,6 +126,69 @@ namespace EvercamV1
         }
     }
 
+    public class CameraInfo
+    {
+        [JsonProperty("id")]
+        public string ID { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("is_public")]
+        public bool IsPublic { get; set; }
+
+        [JsonProperty("external_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalUrl { get; set; }
+
+        [JsonProperty("internal_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string InternalUrl { get; set; }
+
+        [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string JpgUrl { get; set; }
+
+        [JsonProperty("cam_username", NullValueHandling = NullValueHandling.Ignore)]
+        public string Username { get; set; }
+
+        [JsonProperty("cam_password", NullValueHandling = NullValueHandling.Ignore)]
+        public string Password { get; set; }
+    }
+
+    public class CameraTestInfo
+    {
+        [JsonProperty("external_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalUrl { get; set; }
+
+        [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string JpgUrl { get; set; }
+
+        [JsonProperty("cam_username", NullValueHandling = NullValueHandling.Ignore)]
+        public string Username { get; set; }
+
+        [JsonProperty("cam_password", NullValueHandling = NullValueHandling.Ignore)]
+        public string Password { get; set; }
+    }
+
+    public class CameraShare
+    {
+        [JsonProperty("id")]
+        public string ID { get; set; }
+
+        [JsonProperty("camera_id")]
+        public string CameraID { get; set; }
+
+        [JsonProperty("external_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalUrl { get; set; }
+
+        [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string JpgUrl { get; set; }
+
+        [JsonProperty("cam_username", NullValueHandling = NullValueHandling.Ignore)]
+        public string Username { get; set; }
+
+        [JsonProperty("cam_password", NullValueHandling = NullValueHandling.Ignore)]
+        public string Password { get; set; }
+    }
+    
     public class Location
     {
         [JsonProperty("lat", NullValueHandling = NullValueHandling.Ignore)]

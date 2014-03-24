@@ -168,17 +168,15 @@ namespace EvercamV1.Tests
         [TestMethod()]
         public void CreateCameraTest()
         {
-            Camera c = new Camera()
+            CameraInfo c = new CameraInfo()
             {
                 ID = "usertest",
                 Name = "Camera Test",
-                Owner = "shakeelanjum",
                 IsPublic = false,
-                Timezone = "Asia/Karachi",
-                Vendor = "Hikvision",
-                Endpoints = new List<string> { "http://192.168.0.1:80" },
-                Snapshots = new Snapshots() { Jpg = "/jpg/image.jpg" },
-                Auth = new Auth(new Basic("admin", "12345"))
+                ExternalUrl = "http://192.168.0.1:80",
+                JpgUrl = "/jpg/image.jpg",
+                Username = "admin",
+                Password = "12345"
             };
             Camera result = evercam.CreateCamera(c);
             Assert.IsNotNull(result);
@@ -189,7 +187,7 @@ namespace EvercamV1.Tests
         [TestMethod()]
         public void UpdateCameraTest()
         {
-            Camera c = new Camera()
+            CameraInfo c = new CameraInfo()
             {
                 ID = "usertest",
                 Name = "User Test Camera",

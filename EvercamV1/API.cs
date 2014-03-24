@@ -11,7 +11,7 @@ namespace EvercamV1
     public sealed class API
     {
         // Live Server
-        public const string LIVE_URL = "https://api.evercam.io/v1/";
+        public const string LIVE_URL = "https://dashboard.evercam.io/v1/";
 
         // Mock Server
         // Server Script: https://github.com/evercam/tools/blob/master/mockserver/mockserver.js
@@ -34,9 +34,16 @@ namespace EvercamV1
         public const string USERS_CAMERA = "users/{0}/cameras.json";
         public const string USERS_RIGHT = "users/{0}/rights.json";
         public const string CAMERAS = "cameras.json";
+        public const string CAMERAS_TEST = "cameras/test.json";
         public const string CAMERAS_ID = "cameras/{0}.json";
+        public const string CAMERAS_SHARE = "cameras/{0}/share.json";
         public const string CAMERAS_SNAPSHOT = "cameras/{0}/snapshots.json";
-        public const string CAMERAS_TIMESTAMP = "cameras/{0}/snapshots/{1}.json";
+        public const string CAMERAS_SNAPSHOT_LATEST = "cameras/{0}/snapshots/latest.json";
+        public const string CAMERAS_SNAPSHOT_RANGE = "cameras/{0}/snapshots/range.json";
+        public const string CAMERAS_SNAPSHOT_DAYS = "cameras/{0}/snapshots/{1}/{2}/days.json";
+        public const string CAMERAS_SNAPSHOT_HOURS = "cameras/{0}/snapshots/{1}/{2}/{3}/hours.json";
+        public const string CAMERAS_SNAPSHOT_TIMESTAMP = "cameras/{0}/snapshots/{1}.json";
+        public const string CAMERAS_SNAPSHOT_JPG = "cameras/{0}/snapshot.jpg";
 
         // Declares static instance field with custom default value
         internal static ThreadLocal<RestClient> Client = new ThreadLocal<RestClient>(() => { return new RestClient(LIVE_URL); });
