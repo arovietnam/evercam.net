@@ -12,8 +12,8 @@ namespace Test
         static void Main(string[] args)
         {
             Evercam evercam = new Evercam(new EvercamClient("c298268b", "600736690c93646b89e3230480978629", "http://1button.info/"));
-            evercam = new Evercam("sajjadkhan", "asdf");
-            CameraInfo c = new CameraInfo()
+            evercam = new Evercam("azharmalik3", "4240");
+            /*CameraInfo c = new CameraInfo()
             {
                 ID = "harbourtest",
                 Name = "Sajjad Office",
@@ -22,8 +22,10 @@ namespace Test
                 JpgUrl = "/Streaming/channels/1/picture",
                 Username = "user",
                 Password = "user"
-            };
-            evercam.UpdateCamera(c);
+            };*/
+            //evercam.UpdateCamera(c);
+            var cams = evercam.GetAllVendors();
+            Console.WriteLine(cams.Count);
         }
     }
 }

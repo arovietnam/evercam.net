@@ -20,9 +20,6 @@ namespace EvercamV1
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
-        [JsonProperty("is_supported", NullValueHandling = NullValueHandling.Ignore)]
-        public bool IsSupported { get; set; }
-
         [JsonProperty("known_macs", NullValueHandling = NullValueHandling.Ignore)]
         public List<string> KnownMacs { get; set; }
 

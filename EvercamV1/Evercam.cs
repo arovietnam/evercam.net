@@ -625,7 +625,7 @@ namespace EvercamV1
                 else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
                     API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
 
-                AddClientCredentials(request, true);
+                AddClientCredentials(request, false);
 
                 var response = API.Client.Value.Execute(request);
 

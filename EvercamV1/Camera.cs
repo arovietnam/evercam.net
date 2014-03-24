@@ -46,17 +46,29 @@ namespace EvercamV1
         [JsonProperty("timezone", NullValueHandling = NullValueHandling.Ignore)]
         public string Timezone { get; set; }
 
-        [JsonProperty("mac_address", NullValueHandling = NullValueHandling.Ignore)]
-        public string MacAddress{ get; set; }
-
-        [JsonProperty("endpoints", NullValueHandling = NullValueHandling.Ignore)]
-        public List<string> Endpoints { get; set; }
-
+        [JsonProperty("is_online", NullValueHandling = NullValueHandling.Ignore)]
+        public bool IsOnline { get; set; }
+        
         [JsonProperty("is_public", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsPublic { get; set; }
 
-        [JsonProperty("is_online", NullValueHandling = NullValueHandling.Ignore)]
-        public bool IsOnline { get; set; }
+        [JsonProperty("external_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalUrl { get; set; }
+
+        [JsonProperty("internal_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string InternalUrl { get; set; }
+        
+        [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string JpegUrl{ get; set; }
+
+        [JsonProperty("cam_username", NullValueHandling = NullValueHandling.Ignore)]
+        public string CameraUsername { get; set; }
+
+        [JsonProperty("cam_password", NullValueHandling = NullValueHandling.Ignore)]
+        public string CameraPassword { get; set; }
+
+        [JsonProperty("mac_address", NullValueHandling = NullValueHandling.Ignore)]
+        public string MacAddress { get; set; }
 
         [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]
         public Location Location;
@@ -64,8 +76,7 @@ namespace EvercamV1
         [JsonProperty("auth", NullValueHandling = NullValueHandling.Ignore)]
         public Auth Auth;
 
-        [JsonProperty("snapshots", NullValueHandling = NullValueHandling.Ignore)]
-        public Snapshots Snapshots;
+        
 
         public byte[] GetLiveImage(string streamUrl)
         {
@@ -102,7 +113,7 @@ namespace EvercamV1
             IAuthenticator apiAuth = API.Client.Value.Authenticator;
             try
             {
-                API.Client.Value.BaseUrl = Endpoints[0] + Snapshots.Jpg;
+                API.Client.Value.BaseUrl = ExternalUrl + JpegUrl;
                 var request = new RestRequest(Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
