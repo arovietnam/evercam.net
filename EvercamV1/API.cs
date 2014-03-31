@@ -11,7 +11,7 @@ namespace EvercamV1
     public sealed class API
     {
         // Live Server
-        public const string LIVE_URL = "https://dashboard.evercam.io/v1/";
+        public const string LIVE_URL = "https://api.evercam.io/v1/";
 
         // Mock Server
         // Server Script: https://github.com/evercam/tools/blob/master/mockserver/mockserver.js
