@@ -17,6 +17,8 @@ namespace EvercamV1
         // Server Script: https://github.com/evercam/tools/blob/master/mockserver/mockserver.js
         public const string MOCK_URL = "http://proxy.evercam.io:3000/v1/";
 
+        internal const string CAMERA_PROTOCOL = "http://";
+
         internal const string ACCESS_GRANT_TYPE = "authorization_code";
         internal const string REFRESH_TOKEN_TYPE = "refresh_token";
 

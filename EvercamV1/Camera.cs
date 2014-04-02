@@ -52,14 +52,26 @@ namespace EvercamV1
         [JsonProperty("is_public", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsPublic { get; set; }
 
-        [JsonProperty("external_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalUrl { get; set; }
+        [JsonProperty("external_host", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalHost { get; set; }
 
-        [JsonProperty("internal_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string InternalUrl { get; set; }
-        
+        [JsonProperty("internal_host", NullValueHandling = NullValueHandling.Ignore)]
+        public string InternalHost { get; set; }
+
+        [JsonProperty("external_http_port", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalHttpPort { get; set; }
+
+        [JsonProperty("internal_http_port", NullValueHandling = NullValueHandling.Ignore)]
+        public string InternalHttpPort { get; set; }
+
+        [JsonProperty("external_rtsp_port", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalRtspPort { get; set; }
+
+        [JsonProperty("internal_rtsp_port", NullValueHandling = NullValueHandling.Ignore)]
+        public string InternalRtspPort { get; set; }
+
         [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string JpegUrl{ get; set; }
+        public string JpegUrl { get; set; }
 
         [JsonProperty("cam_username", NullValueHandling = NullValueHandling.Ignore)]
         public string CameraUsername { get; set; }
@@ -73,67 +85,28 @@ namespace EvercamV1
         [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]
         public Location Location;
 
-        [JsonProperty("auth", NullValueHandling = NullValueHandling.Ignore)]
-        public Auth Auth;
-
-        
-
-        public byte[] GetLiveImage(string streamUrl)
-        {
-            string baseUrl = API.Client.Value.BaseUrl;
-            IAuthenticator apiAuth = API.Client.Value.Authenticator;
-            try
-            {
-                API.Client.Value.BaseUrl = streamUrl;
-                var request = new RestRequest(Method.GET);
-                request.RequestFormat = DataFormat.Json;
-
-                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken);
-                if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
-
-                var response = API.Client.Value.Execute(request);
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.NotFound:
-                    case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content, response.ErrorException);
-                }
-                return response.RawBytes;
-            }
-            catch (EvercamException x) { throw; }
-            catch (Exception x) { throw new EvercamException(x); }
-            finally { API.Client.Value.BaseUrl = baseUrl; API.Client.Value.Authenticator = apiAuth; }
-        }
-
         public byte[] GetLiveImage()
         {
-            string baseUrl = API.Client.Value.BaseUrl;
-            IAuthenticator apiAuth = API.Client.Value.Authenticator;
-            try
+            byte[] data = new byte[] { };
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(API.CAMERA_PROTOCOL + ExternalHost + ":" + ExternalHttpPort + JpegUrl);
+            request.KeepAlive = false;
+            request.Credentials = new NetworkCredential(CameraUsername, CameraPassword);
+
+            using (var response = (HttpWebResponse)request.GetResponse())
             {
-                API.Client.Value.BaseUrl = ExternalUrl + JpegUrl;
-                var request = new RestRequest(Method.GET);
-                request.RequestFormat = DataFormat.Json;
-
-                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken);
-                if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
-
-                var response = API.Client.Value.Execute(request);
-                switch (response.StatusCode)
+                using (Stream stream = response.GetResponseStream())
                 {
-                    case HttpStatusCode.NotFound:
-                    case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content, response.ErrorException);
+                    using (MemoryStream ms = new MemoryStream(60000))
+                    {
+                        if (response.ContentType.Contains("image") && stream != null)
+                        {
+                            stream.CopyTo(ms);
+                            data = ms.ToArray();
+                        }
+                    }
                 }
-                return response.RawBytes;
             }
-            catch (EvercamException x) { throw; }
-            catch (Exception x) { throw new EvercamException(x); }
-            finally { API.Client.Value.BaseUrl = baseUrl; API.Client.Value.Authenticator = apiAuth; }
+            return data;
         }
     }
 
@@ -148,14 +121,20 @@ namespace EvercamV1
         [JsonProperty("is_public")]
         public bool IsPublic { get; set; }
 
-        [JsonProperty("external_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalUrl { get; set; }
+        [JsonProperty("external_host", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalHost { get; set; }
 
-        [JsonProperty("internal_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string InternalUrl { get; set; }
+        [JsonProperty("internal_host", NullValueHandling = NullValueHandling.Ignore)]
+        public string InternalHost { get; set; }
+
+        [JsonProperty("external_http_port", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalHttpPort { get; set; }
+
+        [JsonProperty("internal_http_port", NullValueHandling = NullValueHandling.Ignore)]
+        public string InternalHttpPort { get; set; }
 
         [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string JpgUrl { get; set; }
+        public string JpegUrl { get; set; }
 
         [JsonProperty("cam_username", NullValueHandling = NullValueHandling.Ignore)]
         public string Username { get; set; }

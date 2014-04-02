@@ -259,6 +259,8 @@ namespace EvercamV1
 
                 switch (response.StatusCode)
                 {
+                    case HttpStatusCode.Unauthorized:
+                    case HttpStatusCode.Forbidden:
                     case HttpStatusCode.NotFound:
                         throw new EvercamException(response.Content, response.ErrorException);
                 }
@@ -599,6 +601,8 @@ namespace EvercamV1
 
                 switch (response.StatusCode)
                 {
+                    case HttpStatusCode.Unauthorized:
+                    case HttpStatusCode.Forbidden:
                     case HttpStatusCode.NotFound:
                         throw new EvercamException(response.Content);
                 }
@@ -655,6 +659,7 @@ namespace EvercamV1
             if (Client != null) {
                 request.Parameters.Add(new Parameter() { Name = "api_id", Value = Client.ID, Type = ParameterType.GetOrPost });
                 request.Parameters.Add(new Parameter() { Name = "api_key", Value = Client.Secret, Type = ParameterType.GetOrPost });
+                request.Parameters.Add(new Parameter() { Name = "redirect_uri", Value = Client.RedirectUri, Type = ParameterType.GetOrPost });
             }
         }
 
