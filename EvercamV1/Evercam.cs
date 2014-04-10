@@ -529,24 +529,136 @@ namespace EvercamV1
         }
 
         /// <summary>
-        /// Returns the list of all snapshots currently stored for this camera (COMING SOON)
+        /// Returns the list of all snapshots currently stored for this camera
         /// </summary>
         /// <param name="id">Camera ID</param>
-        /// <returns></returns>
-        public string GetSnapshots(string id)
+        /// <returns>List of Snapshots</returns>
+        public List<Snapshot> GetSnapshots(string id)
         {
-            return "TO-DO";
+            return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT, id));
         }
 
         /// <summary>
-        /// Returns the snapshot stored for this camera closest to the given timestamp (COMING SOON)
+        /// Returns the snapshot stored for this camera closest to the given timestamp
         /// </summary>
-        /// <param name="cameraId">Camera ID</param>
+        /// <param name="id">Camera ID</param>
         /// <param name="timestamp">Timestamp</param>
-        /// <returns></returns>
-        public string GetSnapshots(string cameraId, string timestamp)
+        /// <returns>List of Snapshots</returns>
+        public List<Snapshot> GetSnapshots(string id, string timestamp)
         {
-            return "TO-DO";
+            return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT_TIMESTAMP, id, timestamp));
+        }
+
+        /// <summary>
+        /// Returns latest snapshot stored for this camera
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <param name="withData">Should it send image data</param>
+        /// <returns>Snapshot</returns>
+        public Snapshot GetLatestSnapshot(string id, bool withData)
+        {
+            if (withData)
+                return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT_LATEST, id)).FirstOrDefault<Snapshot>();
+            else
+                return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT_LATEST, id), 
+                    new List<Parameter>() { 
+                        new Parameter() { Name = "with_data", Value = withData, Type = ParameterType.GetOrPost } 
+                    }).FirstOrDefault<Snapshot>();
+        }
+
+        /// <summary>
+        /// Returns list of specific days in a given month which contains any snapshots
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <param name="year">Year, for example 2013</param>
+        /// <param name="month">Month, for example 11</param>
+        /// <returns>List of days</returns>
+        public List<int> GetSnapshotDays(string id, int year, int month)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_SNAPSHOT_DAYS, id, year, month), Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
+                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+
+                AddClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Forbidden:
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.Unauthorized:
+                        throw new EvercamException(response.Content);
+                }
+
+                return JObject.Parse(response.Content)["days"].ToObject<List<int>>();
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Returns list of specific hours in a given day which contains any snapshots
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <param name="year">Year, for example 2013</param>
+        /// <param name="month">Month, for example 11</param>
+        /// <param name="day">Day, for example 17</param>
+        /// <returns>List of hours</returns>
+        public List<int> GetSnapshotHours(string id, int year, int month, int day)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_SNAPSHOT_HOURS, id, year, month, day), Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
+                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+
+                AddClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Forbidden:
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.Unauthorized:
+                        throw new EvercamException(response.Content);
+                }
+
+                return JObject.Parse(response.Content)["hours"].ToObject<List<int>>();
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Returns list of snapshots between two timestamps
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <param name="from">From Unix timestamp</param>
+        /// <param name="to">To Unix timestamp</param>
+        /// <param name="withData">Should it send image data</param>
+        /// <param name="limit">Limit number of results, default 100 with no data, 10 with data</param>
+        /// <param name="page">Page number</param>
+        /// <returns>List of Snapshots</returns>
+        public Snapshot GetSnapshotsRange(string id, long from, long to, bool withData, int limit, int page)
+        {
+            return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT_RANGE, id),
+                new List<Parameter>() {
+                    new Parameter() { Name = "from", Value = from, Type = ParameterType.GetOrPost },
+                    new Parameter() { Name = "to", Value = to, Type = ParameterType.GetOrPost },
+                    new Parameter() { Name = "with_data", Value = withData, Type = ParameterType.GetOrPost },
+                    new Parameter() { Name = "limit", Value = limit, Type = ParameterType.GetOrPost },
+                    new Parameter() { Name = "page", Value = page, Type = ParameterType.GetOrPost }
+                }).FirstOrDefault<Snapshot>();
         }
 
         /// <summary>
@@ -642,6 +754,78 @@ namespace EvercamV1
                 }
 
                 return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// PRIVATE: Get list of all camera snapshots
+        /// </summary>
+        /// <param name="url">API Endpoint</param>
+        /// <returns>List of Snapshots</returns>
+        public List<Snapshot> GetAllSnapshots(string url)
+        {
+            try
+            {
+                var request = new RestRequest(url, Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
+                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+
+                AddClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Forbidden:
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.Unauthorized:
+                        throw new EvercamException(response.Content);
+                }
+
+                return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>();
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// PRIVATE: Get list of all camera snapshots
+        /// </summary>
+        /// <param name="url">API Endpoint</param>
+        /// <param name="parameters">List of additional request parameters</param>
+        /// <returns>List of Snapshots</returns>
+        public List<Snapshot> GetAllSnapshots(string url, List<Parameter> parameters)
+        {
+            try
+            {
+                var request = new RestRequest(url, Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
+                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+
+                if (parameters != null && parameters.Count > 0)
+                    request.Parameters.AddRange(parameters);
+
+                AddClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Forbidden:
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.Unauthorized:
+                        throw new EvercamException(response.Content);
+                }
+
+                return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>();
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
