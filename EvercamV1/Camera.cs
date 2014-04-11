@@ -166,17 +166,17 @@ namespace EvercamV1
         [JsonProperty("camera_id")]
         public string CameraID { get; set; }
 
-        [JsonProperty("external_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalUrl { get; set; }
+        [JsonProperty("user_id", NullValueHandling = NullValueHandling.Ignore)]
+        public int UserID { get; set; }
 
-        [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string JpgUrl { get; set; }
+        [JsonProperty("email", NullValueHandling = NullValueHandling.Ignore)]
+        public string Email { get; set; }
 
-        [JsonProperty("cam_username", NullValueHandling = NullValueHandling.Ignore)]
-        public string Username { get; set; }
+        [JsonProperty("kind", NullValueHandling = NullValueHandling.Ignore)]
+        public string Kind { get; set; }
 
-        [JsonProperty("cam_password", NullValueHandling = NullValueHandling.Ignore)]
-        public string Password { get; set; }
+        [JsonProperty("rights", NullValueHandling = NullValueHandling.Ignore)]
+        public string Rights { get; set; }
     }
 
     public class Snapshot

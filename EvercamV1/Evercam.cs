@@ -76,106 +76,6 @@ namespace EvercamV1
         #endregion
 
 
-        #region OAuth2 Grant-Code-Flow
-        
-        /// <summary>
-        /// Returns new access token details resulted from the auth. code exchange request to Evercam. 
-        /// It also updates Auth values with new access token details. 
-        /// Method requires Client details to be set before this call.
-        /// </summary>
-        /// <param name="authCode">Client request auth. code</param>
-        /// <returns>ResponseToken</returns>
-        public ResponseToken GetAccessToken(string authCode)
-        {
-            // checks if application has already set its Client credentials or not
-            if (Client == null)
-                throw new EvercamException("Client credentials not presented (ID, Secret, Redirect Uri)");
-
-            // prepares access token request
-            AccessTokenRequest access = new AccessTokenRequest();
-            access.ClientID = Client.ID;
-            access.Secret = Client.Secret;
-            access.RedirectUri = Client.RedirectUri;
-            access.Code = authCode;
-            access.GrantType = API.ACCESS_GRANT_TYPE;
-
-            try
-            {
-                var request = new RestRequest(API.TOKEN, Method.POST);
-                request.AddParameter("text/json", JsonConvert.SerializeObject(access), ParameterType.RequestBody);
-                request.RequestFormat = DataFormat.Json;
-
-                var response = API.Client.Value.Execute(request);
-
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.NotFound:
-                    case HttpStatusCode.BadRequest:
-                        throw new EvercamException(response.Content, response.ErrorException);
-                }
-                
-                // receives response token and updates OAuth2 instance values
-                ResponseToken token = JObject.Parse(response.Content)["tokens"].ToObject<List<ResponseToken>>().FirstOrDefault<ResponseToken>();
-                Auth.OAuth2.AccessToken = token.AccessToken;
-                Auth.OAuth2.TokenType = token.TokenType;
-                Auth.OAuth2.ExpiresIn = token.ExpiresIn;
-
-                return token;
-            }
-            catch (Exception x) { throw new EvercamException(x); }
-        }
-
-        /// <summary>
-        /// Returns new access token details resulted from the refresh token exchange request to Evercam. 
-        /// It also updates Auth values with new access token details. 
-        /// Method requires Client details to be set before this call.
-        /// </summary>
-        /// <param name="refreshToken">Client refresh token</param>
-        /// <returns>ResponseToken</returns>
-        public ResponseToken GetRefreshToken(string refreshToken)
-        {
-            // checks if application has already set its Client credentials or not
-            if (Client == null)
-                throw new EvercamException("Client credentials not presented (ID, Secret, Redirect Uri)");
-
-            // prepares refresh token request
-            RefreshTokenRequest access = new RefreshTokenRequest();
-            access.ClientID = Client.ID;
-            access.Secret = Client.Secret;
-            access.RefreshToken = refreshToken;
-            access.GrantType = API.REFRESH_TOKEN_TYPE;
-
-            try
-            {
-                var request = new RestRequest(API.TOKEN, Method.POST);
-                request.AddParameter("text/json", JsonConvert.SerializeObject(access), ParameterType.RequestBody);
-                request.RequestFormat = DataFormat.Json;
-
-                var response = API.Client.Value.Execute(request);
-
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.NotFound:
-                    case HttpStatusCode.BadRequest:
-                        throw new EvercamException(response.Content, response.ErrorException);
-                }
-
-                // receives response token and updates OAuth2 instance values
-                ResponseToken token = JObject.Parse(response.Content)["tokens"].ToObject<List<ResponseToken>>().FirstOrDefault<ResponseToken>();
-                Auth.OAuth2.AccessToken = token.AccessToken;
-                Auth.OAuth2.TokenType = token.TokenType;
-                Auth.OAuth2.ExpiresIn = token.ExpiresIn;
-
-                if (string.IsNullOrEmpty(token.TokenType))
-                    token.TokenType = Auth.OAuth2.TokenType;
-                
-                return token;
-            }
-            catch (Exception x) { throw new EvercamException(x); }
-        }
-
-        #endregion
-
         #region VENDORS
 
         /// <summary>
@@ -255,17 +155,17 @@ namespace EvercamV1
             {
                 var request = new RestRequest(string.Format(API.MODELS_VENDOR_MODEL, vendorId, modelId), Method.GET);
                 request.RequestFormat = DataFormat.Json;
+                
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Unauthorized:
-                    case HttpStatusCode.Forbidden:
-                    case HttpStatusCode.NotFound:
-                        throw new EvercamException(response.Content, response.ErrorException);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Accepted:
+                        return JObject.Parse(response.Content)["models"].ToObject<List<Model>>().FirstOrDefault<Model>();
                 }
-
-                return JObject.Parse(response.Content)["models"].ToObject<List<Model>>().FirstOrDefault<Model>();
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -298,7 +198,7 @@ namespace EvercamV1
                 var request = new RestRequest(string.Format(API.USERS_ID, id), Method.GET);
                 request.RequestFormat = DataFormat.Json;
                 
-                AddClientCredentials(request, true);
+                SetClientCredentials(request, true);
                 
                 var response = API.Client.Value.Execute(request);
 
@@ -350,7 +250,7 @@ namespace EvercamV1
             try
             {
                 var request = new RestRequest(string.Format(API.USERS_ID, id), Method.DELETE);
-                AddClientCredentials(request, true);
+                SetClientCredentials(request, true);
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
@@ -378,7 +278,7 @@ namespace EvercamV1
                 var request = new RestRequest(string.Format(API.USERS_ID, user.ID), Method.PATCH);
                 request.AddParameter("text/json", JsonConvert.SerializeObject(user), ParameterType.RequestBody);
                 request.RequestFormat = DataFormat.Json;
-                AddClientCredentials(request, true);
+                SetClientCredentials(request, true);
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
@@ -425,13 +325,13 @@ namespace EvercamV1
 
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Forbidden:
-                    case HttpStatusCode.BadRequest:
-                    case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content, response.ErrorException);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Created:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Accepted:
+                        return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
                 }
-
-                return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -456,20 +356,23 @@ namespace EvercamV1
             try
             {
                 var request = new RestRequest(API.CAMERAS, Method.POST);
-                request.AddParameter("text/json", JsonConvert.SerializeObject(info), ParameterType.RequestBody);
                 request.RequestFormat = DataFormat.Json;
-                AddClientCredentials(request, true);
+                request.AddParameter("text/json", JsonConvert.SerializeObject(info), ParameterType.RequestBody);
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Forbidden:
-                    case HttpStatusCode.BadRequest:
-                    case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content, response.ErrorException);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Created:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Accepted:
+                        return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
                 }
-
-                return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -486,18 +389,21 @@ namespace EvercamV1
                 var request = new RestRequest(string.Format(API.CAMERAS_ID, info.ID), Method.PATCH);
                 request.AddParameter("text/json", JsonConvert.SerializeObject(info), ParameterType.RequestBody);
                 request.RequestFormat = DataFormat.Json;
-                AddClientCredentials(request, true);
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+                
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Forbidden:
-                    case HttpStatusCode.BadRequest:
-                    case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content, response.ErrorException);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Found:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Accepted:
+                        return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
                 }
-
-                return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -512,21 +418,20 @@ namespace EvercamV1
             try
             {
                 var request = new RestRequest(string.Format(API.CAMERAS_ID, id), Method.DELETE);
-                AddClientCredentials(request, true);
+                SetClientCredentials(request, true);
                 var response = API.Client.Value.Execute(request);
-
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Forbidden:
-                    case HttpStatusCode.BadRequest:
-                    case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content, response.ErrorException);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                        return response.Content;
                 }
-
-                return response.Content;
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
+
+        #region SNAPSHOTS
 
         /// <summary>
         /// Returns the list of all snapshots currently stored for this camera
@@ -544,9 +449,9 @@ namespace EvercamV1
         /// <param name="id">Camera ID</param>
         /// <param name="timestamp">Timestamp</param>
         /// <returns>List of Snapshots</returns>
-        public List<Snapshot> GetSnapshots(string id, string timestamp)
+        public Snapshot GetSnapshot(string id, string timestamp)
         {
-            return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT_TIMESTAMP, id, timestamp));
+            return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT_TIMESTAMP, id, timestamp)).FirstOrDefault<Snapshot>();
         }
 
         /// <summary>
@@ -580,24 +485,19 @@ namespace EvercamV1
                 var request = new RestRequest(string.Format(API.CAMERAS_SNAPSHOT_DAYS, id, year, month), Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
-                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
-                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
-
-                AddClientCredentials(request, true);
+                SetAuthHeader();
+                SetClientCredentials(request, true);
 
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Forbidden:
-                    case HttpStatusCode.NotFound:
-                    case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Found:
+                    case HttpStatusCode.NoContent:
+                        return JObject.Parse(response.Content)["days"].ToObject<List<int>>();
                 }
-
-                return JObject.Parse(response.Content)["days"].ToObject<List<int>>();
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -617,24 +517,19 @@ namespace EvercamV1
                 var request = new RestRequest(string.Format(API.CAMERAS_SNAPSHOT_HOURS, id, year, month, day), Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
-                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
-                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
-
-                AddClientCredentials(request, true);
+                SetAuthHeader();
+                SetClientCredentials(request, true);
 
                 var response = API.Client.Value.Execute(request);
 
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Forbidden:
-                    case HttpStatusCode.NotFound:
-                    case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Found:
+                    case HttpStatusCode.NoContent:
+                        return JObject.Parse(response.Content)["hours"].ToObject<List<int>>();
                 }
-
-                return JObject.Parse(response.Content)["hours"].ToObject<List<int>>();
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -662,36 +557,216 @@ namespace EvercamV1
         }
 
         /// <summary>
-        /// Fetches a snapshot from the camera and stores it using the current timestamp (COMING SOON)
+        /// Fetches a snapshot from the camera and stores it using the current timestamp
         /// </summary>
-        /// <param name="cameraId">Camera ID</param>
+        /// <param name="id">Camera ID</param>
         /// <returns></returns>
-        public string CreateSnapshot(string cameraId)
+        public Snapshot CreateSnapshot(string id)
         {
-            return "TO-DO";
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_SNAPSHOT, id), Method.POST);
+                request.RequestFormat = DataFormat.Json;
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+                
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>().FirstOrDefault<Snapshot>();
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>
-        /// Stores the supplied snapshot image data for the given timestamp (COMING SOON)
+        /// Stores the supplied snapshot image data for the given timestamp
         /// </summary>
-        /// <param name="cameraId">Camera ID</param>
-        /// <param name="timestamp">Timestamp</param>
+        /// <param name="id">Camera ID</param>
+        /// <param name="timestamp">Snapshot Unix timestamp</param>
         /// <returns></returns>
-        public string UpdateSnapshot(string cameraId, string timestamp)
+        public Snapshot CreateSnapshot(string id, string timestamp, string notes, byte[] data)
         {
-            return "TO-DO";
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_SNAPSHOT_TIMESTAMP, id, timestamp), Method.POST);
+                request.RequestFormat = DataFormat.Json;
+
+                request.Parameters.Add(new Parameter() { Name = "data", Value = data, Type = ParameterType.GetOrPost });
+                request.Parameters.Add(new Parameter() { Name = "notes", Value = notes, Type = ParameterType.GetOrPost });
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>().FirstOrDefault<Snapshot>();
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>
-        /// Deletes any snapshot for this camera which exactly matches the timestamp (COMING SOON)
+        /// Deletes any snapshot for this camera which exactly matches the timestamp
         /// </summary>
-        /// <param name="cameraId">Camera ID</param>
+        /// <param name="id">Camera ID</param>
         /// <param name="timestamp">Timestamp</param>
         /// <returns></returns>
-        public string DeleteSnapshot(string cameraId, string timestamp)
+        public string DeleteSnapshot(string id, string timestamp)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_SNAPSHOT_TIMESTAMP, id, timestamp), Method.DELETE);
+                
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+                
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                        return response.Content;
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        #endregion
+
+        #region SHARES
+
+        /// <summary>
+        /// Get the list of shares for a specified camera
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <returns>List of Camera Shares</returns>
+        public List<CameraShare> GetCameraShares(string id)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_SHARES, id), Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Found:
+                    case HttpStatusCode.NoContent:
+                        return JObject.Parse(response.Content)["shares"].ToObject<List<CameraShare>>();
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Create a new camera share
+        /// </summary>
+        /// <param name="share">Camera Share</param>
+        /// <returns>Details of new Camera Share</returns>
+        public List<CameraShare> CreateCameraShares(CameraShare share)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_SHARE, share.ID), Method.POST);
+                request.RequestFormat = DataFormat.Json;
+                request.AddParameter("text/json", JsonConvert.SerializeObject(share), ParameterType.RequestBody);
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Created:
+                    case HttpStatusCode.NoContent:
+                        return JObject.Parse(response.Content)["shares"].ToObject<List<CameraShare>>();
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Update an existing camera share (COMING SOON)
+        /// </summary>
+        /// <param name="share">Camera Share</param>
+        /// <returns></returns>
+        public string UpdateCameraShare(CameraShare share)
         {
             return "TO-DO";
+            //try
+            //{
+            //    var request = new RestRequest(string.Format(API.CAMERAS_SHARE, share.ID), Method.DELETE);
+
+            //    SetAuthHeader();
+            //    SetClientCredentials(request, true);
+
+            //    var response = API.Client.Value.Execute(request);
+
+            //    switch (response.StatusCode)
+            //    {
+            //        case HttpStatusCode.OK:
+            //        case HttpStatusCode.NoContent:
+            //            return response.Content;
+            //    }
+            //    throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            //}
+            //catch (Exception x) { throw new EvercamException(x); }
         }
+
+        /// <summary>
+        /// Delete an existing camera share
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <param name="shareId">Camera Share ID</param>
+        /// <returns></returns>
+        public string DeleteCameraShare(string id, string shareId)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_SHARE, id), Method.DELETE);
+                request.AddParameter("share_id", shareId, ParameterType.RequestBody);
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                        return response.Content;
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        #endregion
 
         #endregion
 
@@ -713,13 +788,12 @@ namespace EvercamV1
 
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Unauthorized:
-                    case HttpStatusCode.Forbidden:
-                    case HttpStatusCode.NotFound:
-                        throw new EvercamException(response.Content);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["vendors"].ToObject<List<Vendor>>();
                 }
-
-                return JObject.Parse(response.Content)["vendors"].ToObject<List<Vendor>>();
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -741,19 +815,17 @@ namespace EvercamV1
                 else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
                     API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
 
-                AddClientCredentials(request, false);
+                SetClientCredentials(request, false);
 
                 var response = API.Client.Value.Execute(request);
-
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Forbidden:
-                    case HttpStatusCode.NotFound:
-                    case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
                 }
-
-                return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -775,19 +847,17 @@ namespace EvercamV1
                 else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
                     API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
 
-                AddClientCredentials(request, true);
+                SetClientCredentials(request, true);
 
                 var response = API.Client.Value.Execute(request);
-
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Forbidden:
-                    case HttpStatusCode.NotFound:
-                    case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>();
                 }
-
-                return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>();
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -813,21 +883,30 @@ namespace EvercamV1
                 if (parameters != null && parameters.Count > 0)
                     request.Parameters.AddRange(parameters);
 
-                AddClientCredentials(request, true);
+                SetClientCredentials(request, true);
 
                 var response = API.Client.Value.Execute(request);
-
                 switch (response.StatusCode)
                 {
-                    case HttpStatusCode.Forbidden:
-                    case HttpStatusCode.NotFound:
-                    case HttpStatusCode.Unauthorized:
-                        throw new EvercamException(response.Content);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>();
                 }
-
-                return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>();
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Sets authentication header if provided by user (OAuth or Basic)
+        /// </summary>
+        private void SetAuthHeader()
+        {
+            if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
+            else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
         }
 
         /// <summary>
@@ -835,7 +914,7 @@ namespace EvercamV1
         /// </summary>
         /// <param name="request">RestRequest</param>
         /// <param name="forceCredentials">Make sure if request requires client credentials as must, errors if not specified</param>
-        private void AddClientCredentials(RestRequest request, bool forceCredentials)
+        private void SetClientCredentials(RestRequest request, bool forceCredentials)
         {
             if (forceCredentials && Client == null)
                 throw new EvercamException("Client credentials not presented (ID, Secret, Redirect Uri)");
@@ -848,5 +927,11 @@ namespace EvercamV1
         }
 
         #endregion
+    }
+
+    public class Message
+    {
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
+        public string Contents;
     }
 }

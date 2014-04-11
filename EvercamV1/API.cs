@@ -19,9 +19,6 @@ namespace EvercamV1
 
         internal const string CAMERA_PROTOCOL = "http://";
 
-        internal const string ACCESS_GRANT_TYPE = "authorization_code";
-        internal const string REFRESH_TOKEN_TYPE = "refresh_token";
-
         // API Endpoints
         public const string AUTH = "oauth/authorize";
         public const string TOKEN = "oauth/token";
@@ -39,6 +36,7 @@ namespace EvercamV1
         public const string CAMERAS_TEST = "cameras/test.json";
         public const string CAMERAS_ID = "cameras/{0}.json";
         public const string CAMERAS_SHARE = "cameras/{0}/share.json";
+        public const string CAMERAS_SHARES = "cameras/{0}/shares.json";
         public const string CAMERAS_SNAPSHOT = "cameras/{0}/snapshots.json";
         public const string CAMERAS_SNAPSHOT_LATEST = "cameras/{0}/snapshots/latest.json";
         public const string CAMERAS_SNAPSHOT_RANGE = "cameras/{0}/snapshots/range.json";
