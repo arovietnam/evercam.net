@@ -31,7 +31,6 @@ string response = evercam.TestCredentials();
 // Get list of publicly discoverable cameras from within the Evercam system
 List<Camera> ccc = evercam.GetCameras();
 
-
 ```
 ### Authentication and Authorization
 ```c#
@@ -44,7 +43,6 @@ evercam.Client = new EvercamClient("client_id", "client_secret", "redirect_uri")
 
 // Provide OAuth2 access token
 evercam.Auth = new Auth(new OAuth2("oauth2_access_token", "bearer"));
-
 
 ```
 ### User
@@ -88,7 +86,6 @@ Camera camera = evercam.GetCamera("test");
 // Get live image data of camera 'test'
 byte[] imagedata = camera.GetLiveImage();
 
-
 ```
 ### Snapshots
 ```c#
@@ -113,7 +110,6 @@ List<int> hours = evercam.GetSnapshotDays("test", 2014, 1, 1);
 // Get list of snapshots between two timestamps (and additional paramerts like numer of snapshots and page index)
 List<Snapshot> snaps = evercam.GetSnapshotDays("test", 2220913, 2220923, true, 10, 0);
 
-
 ```
 ### Shares
 ```c#
@@ -132,7 +128,6 @@ List<CameraShare> shares = evercam.GetCameraShares("test");
 // Get the list of shares currently granted to a user 'joeyb'
 List<CameraShare> shares = evercam.GetUserShares("joeyb");
 
-
 ```
 ### Vendor
 ```c#
@@ -144,7 +139,6 @@ List<Vendor> vendors = evercam.GetVendorsByName("TP-Link Technologies");
 
 // Get list of vendors by mac address
 List<Vendor> vendors = evercam.GetVendorsByMac("54:E6:FC");
-
 
 ```
 ### Model
