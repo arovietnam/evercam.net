@@ -15,24 +15,8 @@ Evercam evercam = new Evercam();
 Evercam evercam = new Evercam("oauth2_access_token");
 // OR (provide redirect_uri as "empty string" if there isn't a registered one)
 Evercam evercam = new Evercam("api_id", "api_secret", "redirect_uri");
-
-
 ```
-### Test
-```c#
-// A simple endpoint that can be used to test whether an Evercam API id and key pair are valid
-string response = evercam.TestCredentials();
-
-
-```
-### Public
-```c#
-
-// Get list of publicly discoverable cameras from within the Evercam system
-List<Camera> ccc = evercam.GetCameras();
-
-```
-### Authentication and Authorization
+### Authentication
 ```c#
 // Evercam uses Client or OAuth2 credentials for making request to restricted/private resources
 
@@ -43,7 +27,6 @@ evercam.Client = new EvercamClient("client_id", "client_secret", "redirect_uri")
 
 // Provide OAuth2 access token
 evercam.Auth = new Auth(new OAuth2("oauth2_access_token", "bearer"));
-
 ```
 ### User
 ```c#
@@ -61,31 +44,29 @@ User user = evercam.UpdateUser(u);
 
 // Get list of cameras of a user "joeyb"
 List<Camera> cameras = evercam.GetCameras("joeyb");
-
 ```
 ### Camera
 ```c#
 // Create new camera
-Camera c = new Camera()
-{
+CameraInfo info = new CameraInfo() { 
     ID = "test",
     Name = "Test Camera",
-    Owner = "joeyb",
-    IsPublic = true,
-    Timezone = "Europe/London",
-    Vendor = "tplink",
-    Endpoints = new List<string> { "http://123.123.123.123:8080" },
-    Snapshots = new Snapshots() { Jpg = "/jpg/image.jpg" },
-    Auth = new Auth(new Basic("user", "pass"))
+    Username = "user",
+    Password = "pass",
+    IsPublic = false,
+    ExternalHost = "123.123.123.123",
+    InternalHost = "192.168.1.123",
+    ExternalHttpPort = "8080",
+    InternalHttpPort = "80",
+    JpegUrl = "snapshots/image.jpg"
 };
-evercam.CreateCamera(c);
+Camera camera = evercam.CreateCamera(info);
 
 // Get details of camera 'test'
 Camera camera = evercam.GetCamera("test");
 
 // Get live image data of camera 'test'
 byte[] imagedata = camera.GetLiveImage();
-
 ```
 ### Snapshots
 ```c#
@@ -109,7 +90,6 @@ List<int> hours = evercam.GetSnapshotDays("test", 2014, 1, 1);
 
 // Get list of snapshots between two timestamps (and additional paramerts like numer of snapshots and page index)
 List<Snapshot> snaps = evercam.GetSnapshotDays("test", 2220913, 2220923, true, 10, 0);
-
 ```
 ### Shares
 ```c#
@@ -127,7 +107,6 @@ List<CameraShare> shares = evercam.GetCameraShares("test");
 
 // Get the list of shares currently granted to a user 'joeyb'
 List<CameraShare> shares = evercam.GetUserShares("joeyb");
-
 ```
 ### Vendor
 ```c#
@@ -139,7 +118,6 @@ List<Vendor> vendors = evercam.GetVendorsByName("TP-Link Technologies");
 
 // Get list of vendors by mac address
 List<Vendor> vendors = evercam.GetVendorsByMac("54:E6:FC");
-
 ```
 ### Model
 ```c#
@@ -148,5 +126,14 @@ Model model = evercam.GetModel("tplink", "*");
 string username = model.Defaults.Auth.Basic.UserName;
 string password = model.Defaults.Auth.Basic.Password;
 string jpg = model.Defaults.Snapshots.Jpg;
-
+```
+### Public
+```c#
+// Get list of publicly discoverable cameras from within the Evercam system
+List<Camera> ccc = evercam.GetCameras();
+```
+### Test
+```c#
+// A simple endpoint that can be used to test whether an Evercam API id and key pair are valid
+string response = evercam.TestCredentials();
 ```
