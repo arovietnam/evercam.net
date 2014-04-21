@@ -27,7 +27,6 @@ namespace EvercamV1.Tests
             Evercam ec = new Evercam("48a2a289271689277fcfad44a0b1c86f");
             Assert.AreEqual(ec.Auth.OAuth2.AccessToken, "48a2a289271689277fcfad44a0b1c86f");
             Assert.AreEqual(ec.Auth.OAuth2.TokenType, "bearer");
-            Assert.AreEqual(ec.Auth.OAuth2.ExpiresIn, 3599);
         }
 
         [TestMethod()]
@@ -125,7 +124,7 @@ namespace EvercamV1.Tests
         [TestMethod()]
         public void UpdateUserTest()
         {
-            User u = new User()
+            UserInfo u = new UserInfo()
             {
                 ID = "m.shakeel.anjum",
                 Country = "pk",
@@ -173,8 +172,8 @@ namespace EvercamV1.Tests
                 ID = "usertest",
                 Name = "Camera Test",
                 IsPublic = false,
-                ExternalUrl = "http://192.168.0.1:80",
-                JpgUrl = "/jpg/image.jpg",
+                ExternalHost = "http://192.168.0.1:80",
+                JpegUrl = "/jpg/image.jpg",
                 Username = "admin",
                 Password = "12345"
             };

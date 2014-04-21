@@ -61,10 +61,6 @@ namespace EvercamV1
         public string AccessToken { get; set; }
         [JsonProperty("token_type", NullValueHandling = NullValueHandling.Ignore)]
         public string TokenType { get; set; }
-        [JsonProperty("expires_in", NullValueHandling = NullValueHandling.Ignore)]
-        public int ExpiresIn { get; set; }
-        [JsonProperty("expires_at", NullValueHandling = NullValueHandling.Ignore)]
-        public long ExpiresAt { get; set; }
 
         public OAuth2()
         {
@@ -74,24 +70,12 @@ namespace EvercamV1
         {
             AccessToken = accesstoken;
             TokenType = "bearer";
-            ExpiresIn = 3599;
-            ExpiresAt = Utils.ToUnixTimestamp(DateTime.Now.AddSeconds(ExpiresIn));
         }
 
         public OAuth2(string accesstoken, string tokentype)
         {
             AccessToken = accesstoken;
             TokenType = tokentype;
-            ExpiresIn = 3599;
-            ExpiresAt = Utils.ToUnixTimestamp(DateTime.Now.AddSeconds(ExpiresIn));
-        }
-
-        public OAuth2(string accesstoken, string tokentype, int expiresin)
-        {
-            AccessToken = accesstoken;
-            TokenType = tokentype;
-            ExpiresIn = expiresin;
-            ExpiresAt = Utils.ToUnixTimestamp(DateTime.Now.AddSeconds(ExpiresIn));
         }
     }
 }

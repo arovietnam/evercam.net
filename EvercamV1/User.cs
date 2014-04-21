@@ -33,4 +33,20 @@ namespace EvercamV1
         [JsonProperty("confirmed_at", NullValueHandling = NullValueHandling.Ignore)]
         public long ConfirmedAt { get; set; }
     }
+
+    public class UserInfo
+    {
+        [JsonProperty("id")]
+        public string ID { get; set; }
+        [JsonProperty("forename", NullValueHandling = NullValueHandling.Ignore)]
+        public string ForeName { get; set; }
+        [JsonProperty("lastname", NullValueHandling = NullValueHandling.Ignore)]
+        public string LastName { get; set; }
+        [JsonProperty("username", NullValueHandling = NullValueHandling.Ignore)]
+        public string UserName { get; set; }
+        [JsonProperty("email", NullValueHandling = NullValueHandling.Ignore)]
+        public string Email { get; set; }
+        [JsonProperty("country", NullValueHandling = NullValueHandling.Ignore)]
+        public string Country { get; set; }
+    }
 }

@@ -23,6 +23,7 @@ namespace EvercamV1
         public const string AUTH = "oauth/authorize";
         public const string TOKEN = "oauth/token";
         public const string REVOKE = "oauth/revoke";
+        public const string TEST = "test.json";
         public const string VENDORS = "vendors.json";
         public const string VENDORS_MAC = "vendors/{0}.json";
         public const string MODELS = "models.json";
@@ -32,11 +33,13 @@ namespace EvercamV1
         public const string USERS_ID = "users/{0}.json";
         public const string USERS_CAMERA = "users/{0}/cameras.json";
         public const string USERS_RIGHT = "users/{0}/rights.json";
+        public const string USERS_CREDENTIALS = "users/{0}/credentials.json";
+        public const string PUBLIC_CAMERAS = "public/cameras.json";
+        public const string SHARES_USERS = "shares/user/{0}.json";
+        public const string SHARES_CAMERAS = "shares/camera/{0}.json";
         public const string CAMERAS = "cameras.json";
         public const string CAMERAS_TEST = "cameras/test.json";
         public const string CAMERAS_ID = "cameras/{0}.json";
-        public const string CAMERAS_SHARE = "cameras/{0}/share.json";
-        public const string CAMERAS_SHARES = "cameras/{0}/shares.json";
         public const string CAMERAS_SNAPSHOT = "cameras/{0}/snapshots.json";
         public const string CAMERAS_SNAPSHOT_LATEST = "cameras/{0}/snapshots/latest.json";
         public const string CAMERAS_SNAPSHOT_RANGE = "cameras/{0}/snapshots/range.json";

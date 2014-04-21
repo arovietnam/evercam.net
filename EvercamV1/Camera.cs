@@ -82,6 +82,9 @@ namespace EvercamV1
         [JsonProperty("mac_address", NullValueHandling = NullValueHandling.Ignore)]
         public string MacAddress { get; set; }
 
+        [JsonProperty("discoverable ", NullValueHandling = NullValueHandling.Ignore)]
+        public bool IsDiscoverable { get; set; }
+
         [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]
         public Location Location;
 
@@ -156,45 +159,6 @@ namespace EvercamV1
 
         [JsonProperty("cam_password", NullValueHandling = NullValueHandling.Ignore)]
         public string Password { get; set; }
-    }
-
-    public class CameraShare
-    {
-        [JsonProperty("id")]
-        public string ID { get; set; }
-
-        [JsonProperty("camera_id")]
-        public string CameraID { get; set; }
-
-        [JsonProperty("user_id", NullValueHandling = NullValueHandling.Ignore)]
-        public int UserID { get; set; }
-
-        [JsonProperty("email", NullValueHandling = NullValueHandling.Ignore)]
-        public string Email { get; set; }
-
-        [JsonProperty("kind", NullValueHandling = NullValueHandling.Ignore)]
-        public string Kind { get; set; }
-
-        [JsonProperty("rights", NullValueHandling = NullValueHandling.Ignore)]
-        public string Rights { get; set; }
-    }
-
-    public class Snapshot
-    {
-        [JsonProperty("camera", NullValueHandling = NullValueHandling.Ignore)]
-        public string Camera;
-
-        [JsonProperty("notes", NullValueHandling = NullValueHandling.Ignore)]
-        public string Notes;
-
-        [JsonProperty("created_at", NullValueHandling = NullValueHandling.Ignore)]
-        public long CreatedAt;
-
-        [JsonProperty("timezone", NullValueHandling = NullValueHandling.Ignore)]
-        public string Timezone;
-
-        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
-        public string Data;
     }
     
     public class Location
