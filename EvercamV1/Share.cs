@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace EvercamV1
 {
-    public class CameraShare
+    public class Share
     {
         [JsonProperty("sharer_id", NullValueHandling = NullValueHandling.Ignore)]
         public int ID { get; set; }
@@ -34,7 +34,7 @@ namespace EvercamV1
         public string Rights { get; set; }
     }
 
-    public class CameraShareInfo
+    public class ShareInfo
     {
         [JsonProperty("id")]
         public string ID { get; set; }

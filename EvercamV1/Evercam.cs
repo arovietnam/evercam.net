@@ -311,7 +311,7 @@ namespace EvercamV1
         /// </summary>
         /// <param name="id">Camera ID</param>
         /// <returns>List of Camera Shares</returns>
-        public List<CameraShare> GetUserShares(string id)
+        public List<Share> GetUserShares(string id)
         {
             try
             {
@@ -328,7 +328,7 @@ namespace EvercamV1
                     case HttpStatusCode.OK:
                     case HttpStatusCode.Found:
                     case HttpStatusCode.NoContent:
-                        return JObject.Parse(response.Content)["shares"].ToObject<List<CameraShare>>();
+                        return JObject.Parse(response.Content)["shares"].ToObject<List<Share>>();
                 }
                 throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
@@ -710,6 +710,8 @@ namespace EvercamV1
 
         #endregion
 
+        #endregion
+
         #region SHARES
 
         /// <summary>
@@ -717,7 +719,7 @@ namespace EvercamV1
         /// </summary>
         /// <param name="id">Camera ID</param>
         /// <returns>List of Camera Shares</returns>
-        public List<CameraShare> GetCameraShares(string id)
+        public List<Share> GetCameraShares(string id)
         {
             try
             {
@@ -734,7 +736,7 @@ namespace EvercamV1
                     case HttpStatusCode.OK:
                     case HttpStatusCode.Found:
                     case HttpStatusCode.NoContent:
-                        return JObject.Parse(response.Content)["shares"].ToObject<List<CameraShare>>();
+                        return JObject.Parse(response.Content)["shares"].ToObject<List<Share>>();
                 }
                 throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
@@ -746,13 +748,13 @@ namespace EvercamV1
         /// </summary>
         /// <param name="share">Camera Share</param>
         /// <returns>Details of new Camera Share</returns>
-        public CameraShare CreateCameraShare(CameraShareInfo share)
+        public Share CreateCameraShare(ShareInfo share)
         {
             try
             {
                 var request = new RestRequest(string.Format(API.SHARES_CAMERAS, share.ID), Method.POST);
                 request.RequestFormat = DataFormat.Json;
-                
+
                 request.AddParameter("email", share.Email, ParameterType.RequestBody);
                 request.AddParameter("rights", share.Rights, ParameterType.RequestBody);
 
@@ -766,7 +768,7 @@ namespace EvercamV1
                     case HttpStatusCode.OK:
                     case HttpStatusCode.Created:
                     case HttpStatusCode.NoContent:
-                        return JObject.Parse(response.Content)["shares"].ToObject<List<CameraShare>>().FirstOrDefault();
+                        return JObject.Parse(response.Content)["shares"].ToObject<List<Share>>().FirstOrDefault();
                 }
                 throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
@@ -778,7 +780,7 @@ namespace EvercamV1
         /// </summary>
         /// <param name="share">Camera Share</param>
         /// <returns></returns>
-        public string UpdateCameraShare(CameraShareInfo share)
+        public string UpdateCameraShare(ShareInfo share)
         {
             return "TO-DO";
             //try
@@ -829,8 +831,6 @@ namespace EvercamV1
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
-
-        #endregion
 
         #endregion
 
