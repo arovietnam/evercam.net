@@ -88,6 +88,10 @@ namespace EvercamV1
         [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]
         public Location Location;
 
+        /// <summary>
+        /// Fetches live image from camera directly
+        /// </summary>
+        /// <returns>Raw bytes of received image</returns>
         public byte[] GetLiveImage()
         {
             byte[] data = new byte[] { };
@@ -159,6 +163,21 @@ namespace EvercamV1
 
         [JsonProperty("cam_password", NullValueHandling = NullValueHandling.Ignore)]
         public string Password { get; set; }
+    }
+
+    public class LiveImage
+    {
+        [JsonProperty("camera", NullValueHandling = NullValueHandling.Ignore)]
+        public string Camera { get; set; }
+
+        [JsonProperty("timezone", NullValueHandling = NullValueHandling.Ignore)]
+        public string Timezone { get; set; }
+
+        [JsonProperty("created_at", NullValueHandling = NullValueHandling.Ignore)]
+        public long CreatedAt { get; set; }
+
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
     }
     
     public class Location

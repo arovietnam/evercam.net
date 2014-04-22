@@ -397,6 +397,36 @@ namespace EvercamV1
         }
 
         /// <summary>
+        /// Returns base64 encoded jpg from the camera
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <returns>Returns live image data</returns>
+        public LiveImage GetLiveImage(string id)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_LIVE, id), Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                SetAuthHeader();
+                SetClientCredentials(request, false);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Created:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Accepted:
+                        return JObject.Parse(response.Content).ToObject<LiveImage>();
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
         /// Returns all data for a given camera
         /// </summary>
         /// <param name="id">Camera ID</param>

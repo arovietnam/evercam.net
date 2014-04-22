@@ -38,8 +38,9 @@ namespace EvercamV1
         public const string SHARES_USERS = "shares/user/{0}.json";
         public const string SHARES_CAMERAS = "shares/camera/{0}.json";
         public const string CAMERAS = "cameras.json";
-        public const string CAMERAS_TEST = "cameras/test.json";
         public const string CAMERAS_ID = "cameras/{0}.json";
+        public const string CAMERAS_TEST = "cameras/test.json";
+        public const string CAMERAS_LIVE = "cameras/{0}/live.json";
         public const string CAMERAS_SNAPSHOT = "cameras/{0}/snapshots.json";
         public const string CAMERAS_SNAPSHOT_LATEST = "cameras/{0}/snapshots/latest.json";
         public const string CAMERAS_SNAPSHOT_RANGE = "cameras/{0}/snapshots/range.json";
