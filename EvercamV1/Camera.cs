@@ -59,16 +59,16 @@ namespace EvercamV1
         public string InternalHost { get; set; }
 
         [JsonProperty("external_http_port", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalHttpPort { get; set; }
+        public int ExternalHttpPort { get; set; }
 
         [JsonProperty("internal_http_port", NullValueHandling = NullValueHandling.Ignore)]
-        public string InternalHttpPort { get; set; }
+        public int InternalHttpPort { get; set; }
 
         [JsonProperty("external_rtsp_port", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalRtspPort { get; set; }
+        public int ExternalRtspPort { get; set; }
 
         [JsonProperty("internal_rtsp_port", NullValueHandling = NullValueHandling.Ignore)]
-        public string InternalRtspPort { get; set; }
+        public int InternalRtspPort { get; set; }
 
         [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
         public string JpegUrl { get; set; }
@@ -135,10 +135,10 @@ namespace EvercamV1
         public string InternalHost { get; set; }
 
         [JsonProperty("external_http_port", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalHttpPort { get; set; }
+        public int ExternalHttpPort { get; set; }
 
         [JsonProperty("internal_http_port", NullValueHandling = NullValueHandling.Ignore)]
-        public string InternalHttpPort { get; set; }
+        public int InternalHttpPort { get; set; }
 
         [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
         public string JpegUrl { get; set; }
