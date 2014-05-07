@@ -51,4 +51,22 @@ namespace EvercamV1
         [JsonProperty("notify", NullValueHandling = NullValueHandling.Ignore)]
         public string Notify { get; set; }
     }
+
+    public class ShareRequest
+    {
+        [JsonProperty("id")]
+        public string ID { get; set; }
+
+        [JsonProperty("camera_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string CameraID { get; set; }
+
+        [JsonProperty("user_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string UserID { get; set; }
+
+        [JsonProperty("email", NullValueHandling = NullValueHandling.Ignore)]
+        public string Email { get; set; }
+
+        [JsonProperty("rights", NullValueHandling = NullValueHandling.Ignore)]
+        public string Rights { get; set; }
+    }
 }

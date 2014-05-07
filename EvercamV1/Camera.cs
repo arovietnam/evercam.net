@@ -28,6 +28,9 @@ namespace EvercamV1
         [JsonProperty("vendor", NullValueHandling = NullValueHandling.Ignore)]
         public string Vendor { get; set; }
 
+        [JsonProperty("vendor_name", NullValueHandling = NullValueHandling.Ignore)]
+        public string VendorName { get; set; }
+
         [JsonProperty("model", NullValueHandling = NullValueHandling.Ignore)]
         public string Model { get; set; }
 
@@ -82,11 +85,32 @@ namespace EvercamV1
         [JsonProperty("mac_address", NullValueHandling = NullValueHandling.Ignore)]
         public string MacAddress { get; set; }
 
-        [JsonProperty("discoverable ", NullValueHandling = NullValueHandling.Ignore)]
-        public bool IsDiscoverable { get; set; }
-
         [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]
         public Location Location;
+
+        [JsonProperty("discoverable", NullValueHandling = NullValueHandling.Ignore)]
+        public bool IsDiscoverable { get; set; }
+
+        [JsonProperty("external_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalJpegUrl { get; set; }
+
+        [JsonProperty("internal_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string InternalJpegUrl { get; set; }
+
+        [JsonProperty("dyndns_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string DyndnsJpegUrl { get; set; }
+
+        [JsonProperty("short_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string ShortJpegUrl { get; set; }
+
+        [JsonProperty("external_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalRtspUrl { get; set; }
+
+        [JsonProperty("internal_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string InternalRtspUrl { get; set; }
+
+        [JsonProperty("dyndns_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string DyndnsRtspUrl { get; set; }
 
         /// <summary>
         /// Fetches live image from camera directly

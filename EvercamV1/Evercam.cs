@@ -806,31 +806,35 @@ namespace EvercamV1
         }
 
         /// <summary>
-        /// Update an existing camera share (COMING SOON)
+        /// Update an existing camera share
         /// </summary>
-        /// <param name="share">Camera Share</param>
-        /// <returns></returns>
-        public string UpdateCameraShare(ShareInfo share)
+        /// <param name="id">The unique identifier of the camera share to be updated</param>
+        /// <param name="rights">A comma separate list of the rights to be set on the share.</param>
+        /// <returns>Updated Share Details</returns>
+        public Share UpdateCameraShare(string id, string rights)
         {
-            return "TO-DO";
-            //try
-            //{
-            //    var request = new RestRequest(string.Format(API.CAMERAS_SHARE, share.ID), Method.DELETE);
+            try
+            {
+                var request = new RestRequest(string.Format(API.SHARES_CAMERAS, id), Method.PATCH);
+                request.AddParameter("rights", rights, ParameterType.RequestBody);
+                request.RequestFormat = DataFormat.Json;
 
-            //    SetAuthHeader();
-            //    SetClientCredentials(request, true);
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+                var response = API.Client.Value.Execute(request);
 
-            //    var response = API.Client.Value.Execute(request);
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.Forbidden:
+                    case HttpStatusCode.BadRequest:
+                    case HttpStatusCode.Unauthorized:
+                        throw new EvercamException(response.Content, response.ErrorException);
+                }
 
-            //    switch (response.StatusCode)
-            //    {
-            //        case HttpStatusCode.OK:
-            //        case HttpStatusCode.NoContent:
-            //            return response.Content;
-            //    }
-            //    throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
-            //}
-            //catch (Exception x) { throw new EvercamException(x); }
+                return JObject.Parse(response.Content)["shares"].ToObject<List<Share>>().FirstOrDefault<Share>();
+            }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>
@@ -858,6 +862,133 @@ namespace EvercamV1
                         return response.Content;
                 }
                 throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Create a new camera share
+        /// </summary>
+        /// <param name="shareRequest">Camera Share Request Details</param>
+        /// <returns>Details of new Camera Share Request</returns>
+        public ShareRequest CreateCameraShareRequest(ShareRequest shareRequest)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.SHARES_REQUESTS, shareRequest.ID), Method.POST);
+                request.RequestFormat = DataFormat.Json;
+
+                request.AddParameter("camera_id", shareRequest.CameraID, ParameterType.RequestBody);
+                request.AddParameter("user_id", shareRequest.UserID, ParameterType.RequestBody);
+                request.AddParameter("email", shareRequest.Email, ParameterType.RequestBody);
+                request.AddParameter("rights", shareRequest.Rights, ParameterType.RequestBody);
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Created:
+                    case HttpStatusCode.NoContent:
+                        return JObject.Parse(response.Content)["share_requests"].ToObject<List<ShareRequest>>().FirstOrDefault();
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Fetch the list of share requests currently outstanding for a given camera
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <param name="status">The request status to fetch, either 'PENDING', 'USED' or 'CANCELLED'</param>
+        /// <returns>List of Camera Share Reqeusts</returns>
+        public List<ShareRequest> GetCameraShareRequests(string id, string status)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.SHARES_REQUESTS, id), Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Found:
+                    case HttpStatusCode.NoContent:
+                        return JObject.Parse(response.Content)["share_requests"].ToObject<List<ShareRequest>>();
+                }
+
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Cancels a pending camera share request for a given camera
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <param name="email">The email address of user the camera was shared with</param>
+        /// <param name="shareId">Camera Share ID</param>
+        /// <returns></returns>
+        public string DeleteCameraShareRequest(string id, string email)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.SHARES_REQUESTS, id), Method.DELETE);
+                request.AddParameter("email", email, ParameterType.RequestBody);
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                        return response.Content;
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Updates a pending camera share request
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <param name="rights">The new set of rights to be granted for the share</param>
+        /// <returns>Update Share Request Details</returns>
+        public ShareRequest UpdateCameraShareRequest(string id, string rights)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.SHARES_REQUESTS, id), Method.PATCH);
+                request.AddParameter("rights", rights, ParameterType.RequestBody);
+                request.RequestFormat = DataFormat.Json;
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.Forbidden:
+                    case HttpStatusCode.BadRequest:
+                    case HttpStatusCode.Unauthorized:
+                        throw new EvercamException(response.Content, response.ErrorException);
+                }
+
+                return JObject.Parse(response.Content)["share_requests"].ToObject<List<ShareRequest>>().FirstOrDefault<ShareRequest>();
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
