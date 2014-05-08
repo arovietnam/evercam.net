@@ -91,26 +91,8 @@ namespace EvercamV1
         [JsonProperty("discoverable", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsDiscoverable { get; set; }
 
-        [JsonProperty("external_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalJpegUrl { get; set; }
-
-        [JsonProperty("internal_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string InternalJpegUrl { get; set; }
-
-        [JsonProperty("dyndns_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string DyndnsJpegUrl { get; set; }
-
-        [JsonProperty("short_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string ShortJpegUrl { get; set; }
-
-        [JsonProperty("external_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalRtspUrl { get; set; }
-
-        [JsonProperty("internal_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string InternalRtspUrl { get; set; }
-
-        [JsonProperty("dyndns_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string DyndnsRtspUrl { get; set; }
+        [JsonProperty("extra_urls", NullValueHandling = NullValueHandling.Ignore)]
+        public ExtraUrls ExtraUrls { get; set; }
 
         /// <summary>
         /// Fetches live image from camera directly
@@ -139,6 +121,30 @@ namespace EvercamV1
             }
             return data;
         }
+    }
+
+    public class ExtraUrls
+    {
+        [JsonProperty("external_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalJpegUrl { get; set; }
+
+        [JsonProperty("internal_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string InternalJpegUrl { get; set; }
+
+        [JsonProperty("dyndns_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string DyndnsJpegUrl { get; set; }
+
+        [JsonProperty("short_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string ShortJpegUrl { get; set; }
+
+        [JsonProperty("external_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string ExternalRtspUrl { get; set; }
+
+        [JsonProperty("internal_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string InternalRtspUrl { get; set; }
+
+        [JsonProperty("dyndns_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string DyndnsRtspUrl { get; set; }
     }
 
     public class CameraInfo

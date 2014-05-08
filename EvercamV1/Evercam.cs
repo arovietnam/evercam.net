@@ -31,10 +31,10 @@ namespace EvercamV1
         /// Initializes Evercam with user's OAuth2.0 authentication details
         /// </summary>
         /// <param name="accesstoken"></param>
-        public Evercam(string accesstoken)
+        public Evercam(string access_token)
         {
             if (Auth == null) Auth = new EvercamV1.Auth();
-            Auth.OAuth2 = new OAuth2(accesstoken);
+            Auth.OAuth2 = new OAuth2(access_token);
             try
             {
                 API.SetClientAuth(Auth);
@@ -46,22 +46,13 @@ namespace EvercamV1
         }
 
         /// <summary>
-        /// Initializes Evercam with user's Basic authentication details
+        /// Initializes Evercam with Client credentials
         /// </summary>
-        /// <param name="username">User Name</param>
-        /// <param name="password">User Password</param>
-        public Evercam(string username, string password)
+        /// <param name="api_id">Evercan API ID for a client/user</param>
+        /// <param name="api_key">Evercan API Key/Secret of a client/user</param>
+        public Evercam(string api_id, string api_key)
         {
-            if (Auth == null) Auth = new EvercamV1.Auth();
-            Auth.Basic = new Basic(username, password);
-            try
-            {
-                API.SetClientAuth(Auth);
-            }
-            catch (TypeInitializationException x)
-            {
-                throw new EvercamException("File not found. Initialization requires RestSharp.dll to be included in project.", x.InnerException);
-            }
+            Client = new EvercamClient(api_id, api_key, "");
         }
 
         /// <summary>
@@ -782,11 +773,12 @@ namespace EvercamV1
         {
             try
             {
-                var request = new RestRequest(string.Format(API.SHARES_CAMERAS, share.ID), Method.POST);
+                var request = new RestRequest(string.Format(API.SHARES_CAMERAS, share.CameraID), Method.POST);
                 request.RequestFormat = DataFormat.Json;
 
-                request.AddParameter("email", share.Email, ParameterType.RequestBody);
-                request.AddParameter("rights", share.Rights, ParameterType.RequestBody);
+                request.AddParameter("id", share.CameraID, ParameterType.QueryString);
+                request.AddParameter("email", share.Email, ParameterType.QueryString);
+                request.AddParameter("rights", share.Rights, ParameterType.QueryString);
 
                 SetAuthHeader();
                 SetClientCredentials(request, false);
@@ -811,13 +803,14 @@ namespace EvercamV1
         /// <param name="id">The unique identifier of the camera share to be updated</param>
         /// <param name="rights">A comma separate list of the rights to be set on the share.</param>
         /// <returns>Updated Share Details</returns>
-        public Share UpdateCameraShare(string id, string rights)
+        public Share UpdateCameraShare(int id, string rights)
         {
             try
             {
                 var request = new RestRequest(string.Format(API.SHARES_CAMERAS, id), Method.PATCH);
+                request.AddParameter("id", id, ParameterType.RequestBody);
                 request.AddParameter("rights", rights, ParameterType.RequestBody);
-                request.RequestFormat = DataFormat.Json;
+                //request.RequestFormat = DataFormat.Json;
 
                 SetAuthHeader();
                 SetClientCredentials(request, true);
@@ -848,7 +841,7 @@ namespace EvercamV1
             try
             {
                 var request = new RestRequest(string.Format(API.SHARES_CAMERAS, id), Method.DELETE);
-                request.AddParameter("share_id", shareId, ParameterType.RequestBody);
+                request.AddParameter("share_id", shareId, ParameterType.QueryString);
 
                 SetAuthHeader();
                 SetClientCredentials(request, true);

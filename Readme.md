@@ -37,7 +37,7 @@ User user = evercam.GetUser("joeyb");
 UserInfo u = new UserInfo()
 {
     ID = "joeyb",
-    Email = "joeyb@newemail.com",
+    Email = "joeyb@email.com",
     Country = "US"
 };
 User user = evercam.UpdateUser(u);
@@ -49,7 +49,7 @@ List<Camera> cameras = evercam.GetCameras("joeyb");
 ```c#
 // Create new camera
 CameraInfo info = new CameraInfo() { 
-    ID = "test",
+    ID = "testcam",
     Name = "Test Camera",
     Username = "user",
     Password = "pass",
@@ -62,51 +62,77 @@ CameraInfo info = new CameraInfo() {
 };
 Camera camera = evercam.CreateCamera(info);
 
-// Get details of camera 'test'
-Camera camera = evercam.GetCamera("test");
+// Get details of camera 'testcam'
+Camera camera = evercam.GetCamera("testcam");
 
-// Get live image data of camera 'test'
+// Get live image data of camera 'testcam'
 byte[] imagedata = camera.GetLiveImage();
 ```
 ### Snapshots
 ```c#
 // Fetches a snapshot from the camera and stores it using the current timestamp
-Snapshot snap = evercam.CreateSnapshot("test");
+Snapshot snap = evercam.CreateSnapshot("testcam");
 
 // Get the snapshot stored for this camera closest to the given timestamp
-Snapshot snap = evercam.GetSnapshot("test", "2220913");
+Snapshot snap = evercam.GetSnapshot("testcam", "2220913");
 
-// Get the list of all snapshots currently stored for camera 'test'
-Snapshot snaps = evercam.GetSnapshots("test");
+// Get the list of all snapshots currently stored for camera 'testcam'
+Snapshot snaps = evercam.GetSnapshots("testcam");
 
-// Get latest snapshot stored for camera 'test', response will also contain image data as base64 encoded JSON
-Snapshot snap = evercam.GetLatestSnapshot("test", true);
+// Get latest snapshot stored for camera 'testcam', response will also contain image data as base64 encoded JSON
+Snapshot snap = evercam.GetLatestSnapshot("testcam", true);
 
 // Get list of specific days in a given month which contains any snapshots
-List<int> days = evercam.GetSnapshotDays("test", 2014, 1);
+List<int> days = evercam.GetSnapshotDays("testcam", 2014, 1);
 
 // Get list of specific hours in a given day which contains any snapshots
-List<int> hours = evercam.GetSnapshotDays("test", 2014, 1, 1);
+List<int> hours = evercam.GetSnapshotDays("testcam", 2014, 1, 1);
 
 // Get list of snapshots between two timestamps (and additional paramerts like numer of snapshots and page index)
-List<Snapshot> snaps = evercam.GetSnapshotDays("test", 2220913, 2220923, true, 10, 0);
+List<Snapshot> snaps = evercam.GetSnapshotDays("testcam", 2220913, 2220923, true, 10, 0);
 ```
 ### Shares
 ```c#
-// Share a camera 'test' with another Evercam user (with registered email 'alice@email.com')
+// Share a camera 'testcam' for given rights with another Evercam user (with registered email 'alicek@email.com')
 // Currently a user can share his/her public cameras ONLY with other Evercam users
-CameraShareInfo cs = new CameraShareInfo() {
-    ID = "test",
-    Email = "alice@email.com",
-    Rights = "list,view,edit,delete,snapshot"
+ShareInfo info = new ShareInfo()
+{
+    CameraID = "testcam",
+    Email = "alicek@email.com",
+    Rights = "view,edit,delete,list,snapshot"
 };
-CameraShare css = evercam.CreateCameraShare(cs);
+Share share = evercam.CreateCameraShare(info);
 
-// Get the list of shares for a camera 'test'
-List<CameraShare> shares = evercam.GetCameraShares("test");
+// Update share rights for a camera 'testcam'
+Share share = evercam.UpdateCameraShare("testcam", "View,List");
+
+// Delete share for a camera 'testcam' with share id '944'
+evercam.DeleteCameraShare("testcam", 944);
+
+// Get the list of shares for a camera 'testcam'
+List<Share> shares = evercam.GetCameraShares("testcam");
 
 // Get the list of shares currently granted to a user 'joeyb'
-List<CameraShare> shares = evercam.GetUserShares("joeyb");
+List<Share> shares = evercam.GetUserShares("joeyb");
+
+// Evercam user 'alicek@email.com' posts a request to 'joeyb' to share camera 'testcam' with him
+ShareRequest info = new ShareRequest()
+{
+    CameraID = "testcam",
+    Email = "alicek@email.com",
+    Rights = "view,edit,delete,list",
+    UserID = "joeyb"
+};
+ShareRequest request = evercam.CreateCameraShareRequest(info);
+
+// Update share rights for camera 'testcam' against an existing request
+ShareRequest request = evercam.UpdateCameraShareRequest("testcam", "view,list");
+
+// Cancel's a sharing request from 'alicek@email.com' for a camera 'testcam'
+evercam.DeleteCameraShareRequest("testcam", "alicek@email.com")
+
+// Get the list of sharing requests against camera 'testcam' having given status 'PENDING' (or 'USED' or 'CANCELLED')
+List<ShareRequest> requests = evercam.GetCameraShareRequests("testcam", "PENDING");
 ```
 ### Vendor
 ```c#

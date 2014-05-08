@@ -12,17 +12,17 @@ namespace EvercamV1
 {
     public class Share
     {
-        [JsonProperty("sharer_id", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public int ID { get; set; }
 
         [JsonProperty("camera_id")]
         public string CameraID { get; set; }
 
         [JsonProperty("sharer_id", NullValueHandling = NullValueHandling.Ignore)]
-        public int SharerID { get; set; }
+        public string SharerID { get; set; }
 
         [JsonProperty("user_id", NullValueHandling = NullValueHandling.Ignore)]
-        public int UserID { get; set; }
+        public string UserID { get; set; }
 
         [JsonProperty("email", NullValueHandling = NullValueHandling.Ignore)]
         public string Email { get; set; }
@@ -37,7 +37,7 @@ namespace EvercamV1
     public class ShareInfo
     {
         [JsonProperty("id")]
-        public string ID { get; set; }
+        public string CameraID { get; set; }
 
         [JsonProperty("email", NullValueHandling = NullValueHandling.Ignore)]
         public string Email { get; set; }
