@@ -1191,9 +1191,9 @@ namespace EvercamV1
                 throw new EvercamException("Client credentials not presented (ID, Secret, Redirect Uri)");
 
             if (Client != null) {
-                request.Parameters.Add(new Parameter() { Name = "api_id", Value = Client.ID, Type = ParameterType.GetOrPost });
-                request.Parameters.Add(new Parameter() { Name = "api_key", Value = Client.Secret, Type = ParameterType.GetOrPost });
-                request.Parameters.Add(new Parameter() { Name = "redirect_uri", Value = Client.RedirectUri, Type = ParameterType.GetOrPost });
+                request.Parameters.Add(new Parameter() { Name = "api_id", Value = Client.ID, Type = ParameterType.QueryString });
+                request.Parameters.Add(new Parameter() { Name = "api_key", Value = Client.Secret, Type = ParameterType.QueryString });
+                request.Parameters.Add(new Parameter() { Name = "redirect_uri", Value = Client.RedirectUri, Type = ParameterType.QueryString });
             }
         }
 
