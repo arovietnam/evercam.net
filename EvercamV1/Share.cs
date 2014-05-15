@@ -42,6 +42,9 @@ namespace EvercamV1
 
         [JsonProperty("notify", NullValueHandling = NullValueHandling.Ignore)]
         public string Notify { get; set; }
+
+        [JsonProperty("grantor", NullValueHandling = NullValueHandling.Ignore)]
+        public string Grantor { get; set; }
     }
 
     public class ShareRequest

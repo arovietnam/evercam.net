@@ -296,35 +296,6 @@ namespace EvercamV1
         }
 
         /// <summary>
-        /// Fetch the list of shares currently granted to a user
-        /// </summary>
-        /// <param name="id">Camera ID</param>
-        /// <returns>List of Camera Shares</returns>
-        public List<Share> GetUserShares(string id)
-        {
-            try
-            {
-                var request = new RestRequest(string.Format(API.SHARES_USERS, id), Method.GET);
-                request.RequestFormat = DataFormat.Json;
-
-                SetAuthHeader();
-                SetClientCredentials(request, true);
-
-                var response = API.Client.Value.Execute(request);
-
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.OK:
-                    case HttpStatusCode.Found:
-                    case HttpStatusCode.NoContent:
-                        return JObject.Parse(response.Content)["shares"].ToObject<List<Share>>();
-                }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
-            }
-            catch (Exception x) { throw new EvercamException(x); }
-        }
-
-        /// <summary>
         /// Fetch API credentials for an authenticated user
         /// </summary>
         /// <param name="id">Evercam user's Login ID</param>
@@ -336,7 +307,7 @@ namespace EvercamV1
             {
                 var request = new RestRequest(string.Format(API.USERS_CREDENTIALS, id), Method.GET);
                 request.RequestFormat = DataFormat.Json;
-                request.Parameters.Add(new Parameter() { Name = "password", Value = password, Type = ParameterType.GetOrPost });
+                request.Parameters.Add(new Parameter() { Name = "password", Value = password, Type = ParameterType.QueryString });
                 
                 var response = API.Client.Value.Execute(request);
 
@@ -734,6 +705,38 @@ namespace EvercamV1
         #region SHARES
 
         /// <summary>
+        /// Get details for a share for a specific camera and user
+        /// </summary>
+        /// <param name="camera_id">Camera ID</param>
+        /// <param name="user_id">User ID</param>
+        /// <returns></returns>
+        public List<Share> GetCameraShares(string camera_id, string user_id)
+        {
+            try
+            {
+                var request = new RestRequest(API.SHARES, Method.GET);
+                request.Parameters.Add(new Parameter() { Name = "camera_id", Value = camera_id, Type = ParameterType.QueryString });
+                request.Parameters.Add(new Parameter() { Name = "user_id", Value = user_id, Type = ParameterType.QueryString });
+                request.RequestFormat = DataFormat.Json;
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Found:
+                    case HttpStatusCode.NoContent:
+                        return JObject.Parse(response.Content)["shares"].ToObject<List<Share>>();
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
         /// Get the list of shares for a specified camera
         /// </summary>
         /// <param name="id">Camera ID</param>
@@ -851,6 +854,35 @@ namespace EvercamV1
                     case HttpStatusCode.OK:
                     case HttpStatusCode.NoContent:
                         return response.Content;
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Fetch the list of shares currently granted to a user
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <returns>List of Camera Shares</returns>
+        public List<Share> GetUserShares(string id)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.SHARES_USERS, id), Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                SetAuthHeader();
+                SetClientCredentials(request, true);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Found:
+                    case HttpStatusCode.NoContent:
+                        return JObject.Parse(response.Content)["shares"].ToObject<List<Share>>();
                 }
                 throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
             }
