@@ -65,6 +65,11 @@ Camera camera = evercam.CreateCamera(info);
 // Get details of camera 'testcam'
 Camera camera = evercam.GetCamera("testcam");
 
+// Updates details of camera 'testcam'
+camera.ExternalHttpPort = 8080;
+camera.InternalHttpPort = 80;
+camera = evercam.UpdateCamera(camera.GetInfo());
+
 // Get live image data of camera 'testcam'
 byte[] imagedata = camera.GetLiveImage();
 ```
