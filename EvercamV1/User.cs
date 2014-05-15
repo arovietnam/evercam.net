@@ -32,6 +32,19 @@ namespace EvercamV1
         public long UpdatedAt { get; set; }
         [JsonProperty("confirmed_at", NullValueHandling = NullValueHandling.Ignore)]
         public long ConfirmedAt { get; set; }
+
+        public UserInfo GetInfo()
+        {
+            return new UserInfo()
+            {
+                ID = this.ID,
+                Email = this.Email,
+                UserName = this.UserName,
+                ForeName = this.ForeName,
+                LastName = this.LastName,
+                Country = this.Country
+            };
+        }
     }
 
     public class UserInfo

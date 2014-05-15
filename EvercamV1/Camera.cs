@@ -91,8 +91,17 @@ namespace EvercamV1
         [JsonProperty("discoverable", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsDiscoverable { get; set; }
 
-        [JsonProperty("extra_urls", NullValueHandling = NullValueHandling.Ignore)]
-        public ExtraUrls ExtraUrls { get; set; }
+        [JsonProperty("external", NullValueHandling = NullValueHandling.Ignore)]
+        public Urls External { get; set; }
+
+        [JsonProperty("internal", NullValueHandling = NullValueHandling.Ignore)]
+        public Urls Internal { get; set; }
+
+        [JsonProperty("dyndns", NullValueHandling = NullValueHandling.Ignore)]
+        public Urls DyDns { get; set; }
+
+        [JsonProperty("short", NullValueHandling = NullValueHandling.Ignore)]
+        public Urls Short { get; set; }
 
         /// <summary>
         /// Fetches live image from camera directly
@@ -121,6 +130,32 @@ namespace EvercamV1
             }
             return data;
         }
+
+        public CameraInfo GetInfo()
+        {
+            return new CameraInfo() 
+            {
+                ID = this.ID,
+                Name = this.Name,
+                Username = this.CameraUsername,
+                Password = this.CameraUsername,
+                IsPublic = this.IsPublic,
+                ExternalHost = this.ExternalHost,
+                InternalHost = this.InternalHost,
+                ExternalHttpPort = this.ExternalHttpPort,
+                InternalHttpPort = this.InternalHttpPort,
+                JpegUrl = this.JpegUrl
+            };
+        }
+    }
+
+    public class Urls
+    {
+        [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string JpegUrl { get; set; }
+
+        [JsonProperty("rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
+        public string RtspUrl { get; set; }
     }
 
     public class ExtraUrls

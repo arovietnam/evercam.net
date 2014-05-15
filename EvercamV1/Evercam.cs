@@ -444,7 +444,7 @@ namespace EvercamV1
                 SetClientCredentials(request, true);
 
                 var response = API.Client.Value.Execute(request);
-
+                
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:

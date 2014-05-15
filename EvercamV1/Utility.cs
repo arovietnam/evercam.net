@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace EvercamV1
 {
-    public class Utils
+    public class Utility
     {
         /// <summary>
         /// Returns Microsoft Windows Standard Format timezone name against given tz database ID. e.g. (Greenwich Standard Time, Pacific Standard Time, etc.)  
