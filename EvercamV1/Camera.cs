@@ -158,30 +158,6 @@ namespace EvercamV1
         public string RtspUrl { get; set; }
     }
 
-    public class ExtraUrls
-    {
-        [JsonProperty("external_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalJpegUrl { get; set; }
-
-        [JsonProperty("internal_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string InternalJpegUrl { get; set; }
-
-        [JsonProperty("dyndns_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string DyndnsJpegUrl { get; set; }
-
-        [JsonProperty("short_jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string ShortJpegUrl { get; set; }
-
-        [JsonProperty("external_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalRtspUrl { get; set; }
-
-        [JsonProperty("internal_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string InternalRtspUrl { get; set; }
-
-        [JsonProperty("dyndns_rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string DyndnsRtspUrl { get; set; }
-    }
-
     public class CameraInfo
     {
         [JsonProperty("id")]
