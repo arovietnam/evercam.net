@@ -166,13 +166,11 @@ namespace EvercamV1
         #region USERS
 
         /// <summary>
-        /// Returns the set of cameras owned by a particular user
-        /// If user has provided NO authentication details, then ONLY public cameras will be returned. 
-        /// OAuth2 is default authentication scheme, alternatively Basic authentication is used.
+        /// Returns the set of cameras associated with a user
         /// </summary>
         /// <param name="userId">User ID</param>
         /// <returns>List of Camera objects</returns>
-        public List<Camera> GetCameras(string userId)
+        public List<Camera> GetUserCameras(string userId)
         {
             return GetAllCameras(string.Format(API.USERS_CAMERA, userId));
         }
@@ -480,6 +478,138 @@ namespace EvercamV1
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
+
+        /// <summary>
+        /// Returns data for a specified set of cameras. The ultimate intention would be to expand this functionality to be a more general search. The current implementation is as a basic absolute match list capability.
+        /// </summary>
+        /// <param name="ids">Comma separated list of camera identifiers for the cameras being queried</param>
+        /// <returns>List of Camera objects</returns>
+        public List<Camera> GetCameras(string ids)
+        {
+            try
+            {
+                var request = new RestRequest(API.CAMERAS, Method.GET);
+                request.AddParameter("ids", ids);
+                request.RequestFormat = DataFormat.Json;
+
+                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
+                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+
+                SetClientCredentials(request, false);
+
+                var response = API.Client.Value.Execute(request);
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Returns list of log messages for given camera
+        /// </summary>
+        /// <param name="id">Unique identifier for the camera</param>
+        /// <param name="from">From Unix timestamp</param>
+        /// <param name="to">To Unix timestamp</param>
+        /// <param name="limit">Number of results per page. Defaults to 50</param>
+        /// <param name="page">Page number, starting from 0</param>
+        /// <param name="types">Comma separated list of log types: created, accessed, edited, viewed, captured</param>
+        /// <returns>List of Camera Logs as messages</returns>
+        public LogMessages GetLogMessages(string id, int from, int to, int limit, int page, string types)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_LOGS, id), Method.GET);
+                if (from > 0)
+                    request.AddParameter("from", from);
+                if (to > 0)
+                    request.AddParameter("to", to);
+                if (limit > 0)
+                    request.AddParameter("limit", limit);
+                if (page > -1)
+                    request.AddParameter("page", page);
+                if (!string.IsNullOrEmpty(types))
+                    request.AddParameter("types", types);
+
+                request.AddParameter("objects", false);
+                request.RequestFormat = DataFormat.Json;
+
+                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
+                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+
+                SetClientCredentials(request, false);
+
+                var response = API.Client.Value.Execute(request);
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JsonConvert.DeserializeObject<LogMessages>(response.Content);
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Returns list of log objects for given camera
+        /// </summary>
+        /// <param name="id">Unique identifier for the camera</param>
+        /// <param name="from">From Unix timestamp</param>
+        /// <param name="to">To Unix timestamp</param>
+        /// <param name="limit">Number of results per page. Defaults to 50</param>
+        /// <param name="page">Page number, starting from 0</param>
+        /// <param name="types">Comma separated list of log types: created, accessed, edited, viewed, captured</param>
+        /// <returns>List of Camera Logs as objects</returns>
+        public LogObjects GetLogObjects(string id, int from, int to, int limit, int page, string types)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_LOGS, id), Method.GET);
+                if (from > 0)
+                    request.AddParameter("from", from);
+                if (to > 0)
+                    request.AddParameter("to", to);
+                if (limit > 0)
+                    request.AddParameter("limit", limit);
+                if (page > -1)
+                    request.AddParameter("page", page);
+                if (!string.IsNullOrEmpty(types))
+                    request.AddParameter("types", types);
+
+                request.AddParameter("objects", true);
+                request.RequestFormat = DataFormat.Json;
+
+                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
+                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+
+                SetClientCredentials(request, false);
+
+                var response = API.Client.Value.Execute(request);
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JsonConvert.DeserializeObject<LogObjects>(response.Content);
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
 
         #region SNAPSHOTS
 

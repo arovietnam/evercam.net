@@ -63,6 +63,7 @@
     <Compile Include="API.cs" />
     <Compile Include="Auth.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Log.cs" />
     <Compile Include="Share.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="Evercam.cs" />
