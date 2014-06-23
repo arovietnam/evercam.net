@@ -142,9 +142,9 @@ List<ShareRequest> requests = evercam.GetCameraShareRequests("testcam", "PENDING
 ### Logs
 ```c#
 // Get list of logs for given camera as message strings
-var msgs = evercam.GetLogMessages("testcam", 0, 0, 10, 1, "");
+LogMessages msgs = evercam.GetLogMessages("testcam", 0, 0, 10, 1, "");
 // Get list of logs for given camera as log objects entities
-var objs = evercam.GetLogObjects("testcam", 0, 0, 10, 1, "");
+LogObjects objs = evercam.GetLogObjects("testcam", 0, 0, 10, 1, "");
 ```
 ### Vendor
 ```c#
