@@ -23,7 +23,7 @@ namespace EvercamV1
         /// Initialize Evercam without any user authentication details. 
         /// User can only access public resources from Evercam.
         /// </summary>
-        public Evercam() { Auth = new EvercamV1.Auth(); }
+        public Evercam() { Auth = new EvercamV1.Auth(); Client = new EvercamClient("", "", ""); }
 
         /// <summary>
         /// Initializes Evercam with user's OAuth2.0 authentication details
@@ -41,6 +41,7 @@ namespace EvercamV1
             {
                 throw new EvercamException("File not found. Initialization requires RestSharp.dll to be included in project.", x.InnerException);
             }
+            Client = new EvercamClient("", "", "");
         }
 
         /// <summary>
@@ -50,6 +51,7 @@ namespace EvercamV1
         /// <param name="api_key">Evercan API Key/Secret of a client/user</param>
         public Evercam(string api_id, string api_key)
         {
+            Auth = new EvercamV1.Auth();
             Client = new EvercamClient(api_id, api_key, "");
         }
 
@@ -61,6 +63,7 @@ namespace EvercamV1
         /// <param name="redirect_uri">Client's registered URI at Evercam</param>
         public Evercam(string api_id, string api_key, string redirect_uri)
         {
+            Auth = new EvercamV1.Auth();
             Client = new EvercamClient(api_id, api_key, redirect_uri);
         }
 

@@ -139,6 +139,13 @@ evercam.DeleteCameraShareRequest("testcam", "alicek@email.com")
 // Get the list of sharing requests against camera 'testcam' having given status 'PENDING' (or 'USED' or 'CANCELLED')
 List<ShareRequest> requests = evercam.GetCameraShareRequests("testcam", "PENDING");
 ```
+### Logs
+```c#
+// Get list of logs for given camera as message strings
+var msgs = evercam.GetLogMessages("testcam", 0, 0, 10, 1, "");
+// Get list of logs for given camera as log objects entities
+var objs = evercam.GetLogObjects("testcam", 0, 0, 10, 1, "");
+```
 ### Vendor
 ```c#
 // Get a list of all camera vendors
@@ -158,13 +165,14 @@ string username = model.Defaults.Auth.Basic.UserName;
 string password = model.Defaults.Auth.Basic.Password;
 string jpg = model.Defaults.Snapshots.Jpg;
 ```
+### Test
+```c#
+// A simple endpoint that can be used to test whether an Evercam API id and key pair are valid
+Evercam evercam = new Evercam("api_id", "api_secret");
+string response = evercam.TestCredentials();
+```
 ### Public
 ```c#
 // Get list of publicly discoverable cameras from within the Evercam system
 List<Camera> ccc = evercam.GetCameras();
-```
-### Test
-```c#
-// A simple endpoint that can be used to test whether an Evercam API id and key pair are valid
-string response = evercam.TestCredentials();
 ```

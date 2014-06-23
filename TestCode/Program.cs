@@ -3,7 +3,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Net.Http;
+using System.IO;
 using EvercamV1;
+using System.Net;
+using RestSharp;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Test
 {
@@ -29,6 +36,8 @@ namespace Test
             //    JpegUrl = "/SnapshotJPEG?Resolution=640x480"
             //};
             //Camera camera = evercam.CreateCamera(info);
+            var msgs = evercam.GetLogMessages("window", 0, 0, 10, 2, "");
+            var objs = evercam.GetLogObjects("window", 0, 0, 10, 2, "");
             var cam = evercam.GetCamera("window");
             cam.ExternalHttpPort = 9000;
             cam.InternalHttpPort = 8000;
