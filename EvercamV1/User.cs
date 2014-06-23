@@ -31,8 +31,8 @@ namespace EvercamV1
         /// <summary>
         /// Users forename
         /// </summary>
-        [JsonProperty("forename", NullValueHandling = NullValueHandling.Ignore)]
-        public string ForeName { get; set; }
+        [JsonProperty("firstname", NullValueHandling = NullValueHandling.Ignore)]
+        public string FirstName { get; set; }
 
         /// <summary>
         /// Users lastname
@@ -65,7 +65,7 @@ namespace EvercamV1
                 ID = this.ID,
                 Email = this.Email,
                 UserName = this.UserName,
-                ForeName = this.ForeName,
+                ForeName = this.FirstName,
                 LastName = this.LastName,
                 Country = this.Country
             };
