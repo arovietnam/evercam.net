@@ -37,13 +37,15 @@ namespace Test
             //    JpegUrl = "/SnapshotJPEG?Resolution=640x480"
             //};
             //Camera camera = evercam.CreateCamera(info);
+            LiveImage image = evercam.GetLiveImage("window");
+            System.IO.File.WriteAllBytes("e://testing.jpg", Utility.ToBytes(image.Data));
             LogMessages msgs = evercam.GetLogMessages("window", 0, 0, 10, 2, "");
             LogObjects objs = evercam.GetLogObjects("window", 0, 0, 10, 2, "");
             var cam = evercam.GetCamera("window");
             cam.ExternalHttpPort = 9000;
             cam.InternalHttpPort = 8000;
             cam = evercam.UpdateCamera(cam.GetInfo());
-
+            
             //ShareInfo info = new ShareInfo()
             //{
             //    CameraID = "fsdtestcamera",

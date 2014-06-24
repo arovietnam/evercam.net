@@ -55,5 +55,15 @@ namespace EvercamV1
 
             return dateTime.AddSeconds(timestamp);
         }
+
+        /// <summary>
+        /// Decode a base64 image stream to bytes
+        /// </summary>
+        /// <param name="base64Image">Base 64 image stream</param>
+        /// <returns>byte[]</returns>
+        public static byte[] ToBytes(string base64Image)
+        {
+            return System.Convert.FromBase64String(base64Image.Replace("data:image/jpeg;base64,", ""));
+        }
     }
 }

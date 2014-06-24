@@ -71,7 +71,8 @@ camera.InternalHttpPort = 80;
 camera = evercam.UpdateCamera(camera.GetInfo());
 
 // Get live image data of camera 'testcam'
-byte[] imagedata = camera.GetLiveImage();
+LiveImage image = evercam.GetLiveImage("testcam");
+byte[] data = Utility.ToBytes(image.Data);
 ```
 ### Snapshots
 ```c#
