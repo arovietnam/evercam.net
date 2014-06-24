@@ -377,9 +377,6 @@ namespace EvercamV1
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                    case HttpStatusCode.Created:
-                    case HttpStatusCode.NoContent:
-                    case HttpStatusCode.Accepted:
                         return JObject.Parse(response.Content).ToObject<LiveImage>();
                 }
                 throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);

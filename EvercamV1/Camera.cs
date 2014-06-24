@@ -185,6 +185,11 @@ namespace EvercamV1
             request.KeepAlive = false;
             request.Credentials = new NetworkCredential(CameraUsername, CameraPassword);
 
+            //// Fix: http://stackoverflow.com/a/14217394/369383
+            //// Err: System.Net.WebException: The server committed a protocol violation. Section=ResponseStatusLine
+            request.ServicePoint.Expect100Continue = false;
+            request.ServicePoint.MaxIdleTime = 2000;
+            
             using (var response = (HttpWebResponse)request.GetResponse())
             {
                 using (Stream stream = response.GetResponseStream())

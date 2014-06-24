@@ -23,6 +23,7 @@ namespace Test
             //Evercam evercam = new Evercam("ac45487a", "ef811c60ebba8b62ce11fec9c50bc51b");
             //Evercam evercam = new Evercam("906ed3ffcf6c845814e298ef0073ef42");
 
+            //var u = evercam.GetUser("shakeelanjum");
             //CameraInfo info = new CameraInfo()
             //{
             //    ID = "fbadoffice",
@@ -36,8 +37,8 @@ namespace Test
             //    JpegUrl = "/SnapshotJPEG?Resolution=640x480"
             //};
             //Camera camera = evercam.CreateCamera(info);
-            var msgs = evercam.GetLogMessages("window", 0, 0, 10, 2, "");
-            var objs = evercam.GetLogObjects("window", 0, 0, 10, 2, "");
+            LogMessages msgs = evercam.GetLogMessages("window", 0, 0, 10, 2, "");
+            LogObjects objs = evercam.GetLogObjects("window", 0, 0, 10, 2, "");
             var cam = evercam.GetCamera("window");
             cam.ExternalHttpPort = 9000;
             cam.InternalHttpPort = 8000;
