@@ -176,7 +176,30 @@ namespace EvercamV1
         /// <returns>List of Cameras</returns>
         public List<Camera> GetUserCameras(string userId, bool include_shared)
         {
-            return GetAllCameras(string.Format(API.USERS_CAMERA, userId, include_shared));
+            try
+            {
+                var request = new RestRequest(string.Format(API.USERS_CAMERA, userId), Method.GET);
+                request.AddParameter("include_shared", include_shared);
+                request.RequestFormat = DataFormat.Json;
+
+                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
+                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
+                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
+                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+
+                SetClientCredentials(request, false);
+
+                var response = API.Client.Value.Execute(request);
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
+                }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+            }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         /// <summary>

@@ -42,8 +42,8 @@ UserInfo u = new UserInfo()
 };
 User user = evercam.UpdateUser(u);
 
-// Get list of cameras of a user "joeyb"
-List<Camera> cameras = evercam.GetCameras("joeyb");
+// Get list of cameras of a user "joeyb", including shared cameras
+List<Camera> = evercam.GetUserCameras("joeyb", true);
 ```
 ### Camera
 ```c#
@@ -73,6 +73,9 @@ camera = evercam.UpdateCamera(camera.GetInfo());
 // Get live image data of camera 'testcam'
 LiveImage image = evercam.GetLiveImage("testcam");
 byte[] data = Utility.ToBytes(image.Data);
+
+// Get list of cameras with their given (comma separated) IDs
+List<Camera> cameras = evercam.GetCameras("testcam, bestcam, nextcam");
 ```
 ### Snapshots
 ```c#

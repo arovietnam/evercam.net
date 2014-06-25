@@ -24,7 +24,7 @@ namespace EvercamV1
         public const string MODELS_VENDOR_MODEL = "models/{0}/{1}.json";
         public const string USERS = "users.json";
         public const string USERS_ID = "users/{0}.json";
-        public const string USERS_CAMERA = "users/{0}/cameras.json?include_shared={1}";
+        public const string USERS_CAMERA = "users/{0}/cameras.json";
         public const string USERS_RIGHT = "users/{0}/rights.json";
         public const string USERS_CREDENTIALS = "users/{0}/credentials.json";
         public const string PUBLIC_CAMERAS = "public/cameras.json";
