@@ -171,11 +171,12 @@ namespace EvercamV1
         /// <summary>
         /// Returns the set of cameras associated with a user
         /// </summary>
-        /// <param name="userId">User ID</param>
-        /// <returns>List of Camera objects</returns>
-        public List<Camera> GetUserCameras(string userId)
+        /// <param name="userId">The user name or email address of the user</param>
+        /// <param name="include_shared">Set to true to include cameras shared with the user in the fetch</param>
+        /// <returns>List of Cameras</returns>
+        public List<Camera> GetUserCameras(string userId, bool include_shared)
         {
-            return GetAllCameras(string.Format(API.USERS_CAMERA, userId));
+            return GetAllCameras(string.Format(API.USERS_CAMERA, userId, include_shared));
         }
 
         /// <summary>

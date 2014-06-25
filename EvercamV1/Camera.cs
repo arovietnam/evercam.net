@@ -174,6 +174,11 @@ namespace EvercamV1
         [JsonProperty("rights", NullValueHandling = NullValueHandling.Ignore)]
         public string Rights { get; set; }
 
+        /// <summary>
+        /// (optional) Camera short JPEG URL 
+        /// </summary>
+        public URL Short { get; set; }
+
         public CameraInfo GetInfo()
         {
             return new CameraInfo() 
@@ -190,6 +195,12 @@ namespace EvercamV1
                 JpegUrl = this.JpegUrl
             };
         }
+    }
+
+    public class URL
+    {
+        [JsonProperty("jpg_url")]
+        public string JpgUrl { get; set; }
     }
 
     public class CameraInfo
