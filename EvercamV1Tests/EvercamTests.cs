@@ -109,7 +109,7 @@ namespace EvercamV1.Tests
         {
             User u = new User()
             {
-                ForeName = "Shakeel",
+                FirstName = "Shakeel",
                 LastName = "Anjum",
                 Email = "m.shakeel.anjum@hotmail.com",
                 Country = "ie",
