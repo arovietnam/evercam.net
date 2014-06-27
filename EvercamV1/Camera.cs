@@ -163,6 +163,30 @@ namespace EvercamV1
         public bool IsDiscoverable { get; set; }
 
         /// <summary>
+        /// (optional) Camera external URLs
+        /// </summary>
+        [JsonProperty("external", NullValueHandling = NullValueHandling.Ignore)]
+        public URL External { get; set; }
+
+        /// <summary>
+        /// (optional) Camera internal URLs
+        /// </summary>
+        [JsonProperty("internal", NullValueHandling = NullValueHandling.Ignore)]
+        public URL Internal { get; set; }
+
+        /// <summary>
+        /// (optional) Camera dyndns URLs
+        /// </summary>
+        [JsonProperty("dyndns", NullValueHandling = NullValueHandling.Ignore)]
+        public URL Dyndns { get; set; }
+
+        /// <summary>
+        /// (optional) Camera short URLs
+        /// </summary>
+        [JsonProperty("short", NullValueHandling = NullValueHandling.Ignore)]
+        public URL Short { get; set; }
+
+        /// <summary>
         /// (optional) True if the user owns the camera, false otherwise
         /// </summary>
         [JsonProperty("owned", NullValueHandling = NullValueHandling.Ignore)]
@@ -173,11 +197,6 @@ namespace EvercamV1
         /// </summary>
         [JsonProperty("rights", NullValueHandling = NullValueHandling.Ignore)]
         public string Rights { get; set; }
-
-        /// <summary>
-        /// (optional) Camera short JPEG URL 
-        /// </summary>
-        public URL Short { get; set; }
 
         public CameraInfo GetInfo()
         {
