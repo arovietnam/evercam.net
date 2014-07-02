@@ -180,3 +180,18 @@ string response = evercam.TestCredentials();
 // Get list of publicly discoverable cameras from within the Evercam system
 List<Camera> ccc = evercam.GetCameras();
 ```
+### Utility
+This helper class provides common functionality to do basic conversions between Unix and Windows date time and timezone.
+```c#
+// Convets Windows DateTime to equivalent Unix Timestamp
+long timestamp = Utility.ToUnixTimestamp(DateTime.Now);
+
+// Converts Unix Timestamp to equivalent Windows DateTime
+DateTime now = Utility.ToWindowsDateTime(timestamp);
+
+// Converts the Unix timezone to Windows, if matches.
+string windowszone = Utility.ToWindowsTimezone("Europe/Dublin");
+
+// Converts the Windows timezone to Unix. If the primary zone is a link, it then resolves it to the canonical ID.
+string unixzone = Utility.ToUnixTimezone(windowszone);
+```

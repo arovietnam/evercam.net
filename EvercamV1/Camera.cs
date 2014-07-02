@@ -220,6 +220,9 @@ namespace EvercamV1
     {
         [JsonProperty("jpg_url")]
         public string JpgUrl { get; set; }
+
+        [JsonProperty("rtsp_url")]
+        public string RtspUrl { get; set; }
     }
 
     public class CameraInfo
