@@ -181,7 +181,7 @@ string response = evercam.TestCredentials();
 List<Camera> ccc = evercam.GetCameras();
 ```
 ### Utility
-This helper class provides common functionality to do basic conversions between Unix and Windows date time and timezone.
+This helper class provides common functionality to do basic conversion between Unix and Windows date time and timezone.
 ```c#
 // Convets Windows DateTime to equivalent Unix Timestamp
 long timestamp = Utility.ToUnixTimestamp(DateTime.Now);
