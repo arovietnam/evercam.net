@@ -1,9 +1,9 @@
 # evercam.net
 
-A .NET wrapper around Evercam API
+A .NET wrapper for Evercam API
 
 ## Basic Usage
-Right click on EvercamV1.dll (link above) and Save Link As... Then include the .dll in your .Net (v4.5 or higher) project.
+Right click on EvercamV1.dll (link above) and Save Link As... Then include the .dll in your .Net (v4.5 or higher) project. Also include the dependencies in your project (Newtonsoft.Json.dll, RestSharp.dll, NodaTime.dll).
 
 ```c#
 using EvercamV1;
