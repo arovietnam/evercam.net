@@ -48,17 +48,17 @@ List<Camera> = evercam.GetUserCameras("joeyb", true);
 ### Camera
 ```c#
 // Create new camera
-CameraInfo info = new CameraInfo() { 
+CameraInfo info = new CameraInfo()
+{
     ID = "testcam",
     Name = "Test Camera",
     Username = "user",
     Password = "pass",
     IsPublic = false,
-    ExternalHost = "123.123.123.123",
-    InternalHost = "192.168.1.123",
-    ExternalHttpPort = "8080",
-    InternalHttpPort = "80",
-    JpegUrl = "snapshots/image.jpg"
+    External = new URL() { 
+        Host = "123.123.123.123", 
+        Http = new EvercamV1.Http() { Port = 8080,  Jpg = "snapshots/image.jpg" } 
+    }
 };
 Camera camera = evercam.CreateCamera(info);
 
@@ -72,7 +72,7 @@ camera = evercam.UpdateCamera(camera.GetInfo());
 
 // Get live image data of camera 'testcam'
 LiveImage image = evercam.GetLiveImage("testcam");
-byte[] data = Utility.ToBytes(image.Data);
+byte[] data = image.ToBytes();
 
 // Get list of cameras with their given (comma separated) IDs
 List<Camera> cameras = evercam.GetCameras("testcam, bestcam, nextcam");

@@ -27,11 +27,11 @@ namespace EvercamV1
         /// <summary>
         /// (optional) Unique identifier for the camera vendor
         /// </summary>
-        [JsonProperty("vendor", NullValueHandling = NullValueHandling.Ignore)]
-        public string Vendor { get; set; }
+        [JsonProperty("vendor_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string VendorID { get; set; }
 
         /// <summary>
-        /// (optional) The name for the camera vendor
+        /// (optional) Unique identifier for the camera vendor
         /// </summary>
         [JsonProperty("vendor_name", NullValueHandling = NullValueHandling.Ignore)]
         public string VendorName { get; set; }
@@ -85,54 +85,6 @@ namespace EvercamV1
         public bool IsPublic { get; set; }
 
         /// <summary>
-        /// (optional) External host of the camera
-        /// </summary>
-        [JsonProperty("external_host", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalHost { get; set; }
-
-        /// <summary>
-        /// (optional) Internal host of the camera
-        /// </summary>
-        [JsonProperty("internal_host", NullValueHandling = NullValueHandling.Ignore)]
-        public string InternalHost { get; set; }
-
-        /// <summary>
-        /// (optional) External http port of the camera
-        /// </summary>
-        [JsonProperty("external_http_port", NullValueHandling = NullValueHandling.Ignore)]
-        public int ExternalHttpPort { get; set; }
-
-        /// <summary>
-        /// (optional) Internal http port of the camera
-        /// </summary>
-        [JsonProperty("internal_http_port", NullValueHandling = NullValueHandling.Ignore)]
-        public int InternalHttpPort { get; set; }
-
-        /// <summary>
-        /// (optional) External rtsp port of the camera
-        /// </summary>
-        [JsonProperty("external_rtsp_port", NullValueHandling = NullValueHandling.Ignore)]
-        public int ExternalRtspPort { get; set; }
-
-        /// <summary>
-        /// (optional) Internal rtsp port of the camera
-        /// </summary>
-        [JsonProperty("internal_rtsp_port", NullValueHandling = NullValueHandling.Ignore)]
-        public int InternalRtspPort { get; set; }
-
-        /// <summary>
-        /// (optional) Short snapshot url using evr.cm url shortener
-        /// </summary>
-        [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string JpegUrl { get; set; }
-
-        /// <summary>
-        /// (optional) RTSP url using evr.cm dynamic DNS
-        /// </summary>
-        [JsonProperty("rtsp_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string RtspUrl { get; set; }
-
-        /// <summary>
         /// (optional) Camera username
         /// </summary>
         [JsonProperty("cam_username", NullValueHandling = NullValueHandling.Ignore)]
@@ -163,28 +115,28 @@ namespace EvercamV1
         public bool IsDiscoverable { get; set; }
 
         /// <summary>
-        /// (optional) Camera external URLs
+        /// (optional) External host of the camera
         /// </summary>
         [JsonProperty("external", NullValueHandling = NullValueHandling.Ignore)]
         public URL External { get; set; }
 
         /// <summary>
-        /// (optional) Camera internal URLs
+        /// (optional) Internal host of the camera
         /// </summary>
         [JsonProperty("internal", NullValueHandling = NullValueHandling.Ignore)]
         public URL Internal { get; set; }
 
         /// <summary>
-        /// (optional) Camera dyndns URLs
+        /// (optional) DynDns of the camera
         /// </summary>
         [JsonProperty("dyndns", NullValueHandling = NullValueHandling.Ignore)]
-        public URL Dyndns { get; set; }
+        public URL DynDns { get; set; }
 
         /// <summary>
-        /// (optional) Camera short URLs
+        /// (optional) Proxy Url of the camera
         /// </summary>
-        [JsonProperty("short", NullValueHandling = NullValueHandling.Ignore)]
-        public URL Short { get; set; }
+        [JsonProperty("proxy_url", NullValueHandling = NullValueHandling.Ignore)]
+        public URL Proxy { get; set; }
 
         /// <summary>
         /// (optional) True if the user owns the camera, false otherwise
@@ -207,22 +159,53 @@ namespace EvercamV1
                 Username = this.CameraUsername,
                 Password = this.CameraUsername,
                 IsPublic = this.IsPublic,
-                ExternalHost = this.ExternalHost,
-                InternalHost = this.InternalHost,
-                ExternalHttpPort = this.ExternalHttpPort,
-                InternalHttpPort = this.InternalHttpPort,
-                JpegUrl = this.JpegUrl
+                External = this.External,
+                Internal = this.Internal,
+                Proxy = this.Proxy
             };
         }
     }
 
     public class URL
     {
-        [JsonProperty("jpg_url")]
-        public string JpgUrl { get; set; }
+        [JsonProperty("host", NullValueHandling = NullValueHandling.Ignore)]
+        public string Host { get; set; }
 
-        [JsonProperty("rtsp_url")]
-        public string RtspUrl { get; set; }
+        [JsonProperty("http", NullValueHandling = NullValueHandling.Ignore)]
+        public Http Http { get; set; }
+
+        [JsonProperty("rtsp", NullValueHandling = NullValueHandling.Ignore)]
+        public Rtsp Rtsp { get; set; }
+    }
+
+    public class Http
+    {
+        [JsonProperty("port", NullValueHandling = NullValueHandling.Ignore)]
+        public int Port { get; set; }
+
+        [JsonProperty("camera", NullValueHandling = NullValueHandling.Ignore)]
+        public string Camera { get; set; }
+
+        [JsonProperty("jpg", NullValueHandling = NullValueHandling.Ignore)]
+        public string Jpg { get; set; }
+
+        [JsonProperty("mjpg", NullValueHandling = NullValueHandling.Ignore)]
+        public string Mjpg { get; set; }
+    }
+
+    public class Rtsp
+    {
+        [JsonProperty("port", NullValueHandling = NullValueHandling.Ignore)]
+        public int Port { get; set; }
+
+        [JsonProperty("mpeg", NullValueHandling = NullValueHandling.Ignore)]
+        public string Mpeg { get; set; }
+
+        [JsonProperty("audio", NullValueHandling = NullValueHandling.Ignore)]
+        public string Audio { get; set; }
+
+        [JsonProperty("h264", NullValueHandling = NullValueHandling.Ignore)]
+        public string H264 { get; set; }
     }
 
     public class CameraInfo
@@ -248,32 +231,26 @@ namespace EvercamV1
         /// <summary>
         /// (optional) External host of the camera
         /// </summary>
-        [JsonProperty("external_host", NullValueHandling = NullValueHandling.Ignore)]
-        public string ExternalHost { get; set; }
+        [JsonProperty("external", NullValueHandling = NullValueHandling.Ignore)]
+        public URL External { get; set; }
 
         /// <summary>
         /// (optional) Internal host of the camera
         /// </summary>
-        [JsonProperty("internal_host", NullValueHandling = NullValueHandling.Ignore)]
-        public string InternalHost { get; set; }
+        [JsonProperty("internal", NullValueHandling = NullValueHandling.Ignore)]
+        public URL Internal { get; set; }
 
         /// <summary>
-        /// (optional) External http port of the camera
+        /// (optional) DynDns host of the camera
         /// </summary>
-        [JsonProperty("external_http_port", NullValueHandling = NullValueHandling.Ignore)]
-        public int ExternalHttpPort { get; set; }
+        [JsonProperty("dyndns", NullValueHandling = NullValueHandling.Ignore)]
+        public URL DynDns { get; set; }
 
         /// <summary>
-        /// (optional) Internal http port of the camera
+        /// (optional) Proxy Url of the camera
         /// </summary>
-        [JsonProperty("internal_http_port", NullValueHandling = NullValueHandling.Ignore)]
-        public int InternalHttpPort { get; set; }
-
-        /// <summary>
-        /// (optional) Short snapshot url using evr.cm url shortener
-        /// </summary>
-        [JsonProperty("jpg_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string JpegUrl { get; set; }
+        [JsonProperty("proxy_url", NullValueHandling = NullValueHandling.Ignore)]
+        public URL Proxy { get; set; }
 
         /// <summary>
         /// (optional) Camera username
@@ -332,8 +309,20 @@ namespace EvercamV1
         [JsonProperty("created_at", NullValueHandling = NullValueHandling.Ignore)]
         public long CreatedAt { get; set; }
 
+        /// <summary>
+        /// Base64 encoded data string
+        /// </summary>
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public string Data { get; set; }
+
+        /// <summary>
+        /// Converts base64 data string to bytes array
+        /// </summary>
+        /// <returns>byte[]</returns>
+        public byte[] ToBytes()
+        {
+            return Utility.ToBytes(this.Data);
+        }
     }
     
     public class Location
