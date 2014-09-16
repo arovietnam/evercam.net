@@ -33,5 +33,14 @@ namespace EvercamV1
         /// </summary>
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public string Data;
+
+        /// <summary>
+        /// Converts base64 data string to bytes array
+        /// </summary>
+        /// <returns>byte[]</returns>
+        public byte[] ToBytes()
+        {
+            return Utility.ToBytes(this.Data);
+        }
     }
 }

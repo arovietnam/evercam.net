@@ -22,17 +22,5 @@ namespace EvercamV1
         /// </summary>
         [JsonProperty("known_macs", NullValueHandling = NullValueHandling.Ignore)]
         public List<string> KnownMacs { get; set; }
-
-        /// <summary>
-        /// (optional) Whether or not this vendor produces Evercam supported cameras
-        /// </summary>
-        [JsonProperty("is_supported", NullValueHandling = NullValueHandling.Ignore)]
-        public bool IsSupported { get; set; }
-
-        /// <summary>
-        /// (optional) String array of models currently known for this vendor
-        /// </summary>
-        [JsonProperty("models", NullValueHandling = NullValueHandling.Ignore)]
-        public List<string> Models { get; set; }
     }
 }

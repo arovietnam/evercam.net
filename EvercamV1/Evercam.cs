@@ -73,45 +73,37 @@ namespace EvercamV1
         #region VENDORS
 
         /// <summary>
-        /// Get a list of all camera vendors
+        /// Returns set of known models for a supported camera vendor
         /// </summary>
+        /// <param name="id">Unique identifier for the vendor</param>
+        /// <param name="name">Name of the vendor (partial search)</param>
+        /// <param name="mac">Mac address of camera</param>
         /// <returns>List<Vendor></returns>
-        public List<Vendor> GetVendors()
+        public List<Vendor> SearchVendors(string id, string name, string mac)
         {
-            return GetAllVendors(API.VENDORS);
-        }
-
-        /// <summary>
-        /// Get a list of all camera vendors filtered by given vendor name
-        /// </summary>
-        /// <param name="name">Vendor Name</param>
-        /// <returns>List<Vendor></returns>
-        public List<Vendor> GetVendorsByName(string name)
-        {
-            List<Vendor> allVendors = GetAllVendors(API.VENDORS);
-            List<Vendor> list = new List<Vendor>();
-
             try
             {
-                foreach (Vendor v in allVendors)
+                var request = new RestRequest(API.VENDORS_SEARCH, Method.GET);
+
+                if (!string.IsNullOrEmpty(id)) request.AddParameter("id", id, ParameterType.QueryString);
+                if (!string.IsNullOrEmpty(name)) request.AddParameter("name", name, ParameterType.QueryString);
+                if (!string.IsNullOrEmpty(mac)) request.AddParameter("mac", mac, ParameterType.QueryString);
+                
+                SetClientCredentials(request, true);
+
+                request.RequestFormat = DataFormat.Json;
+
+                var response = API.Client.Value.Execute(request);
+                switch (response.StatusCode)
                 {
-                    if (v.Name.ToLower().Equals(name.ToLower()))
-                        list.Add(v);
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["vendors"].ToObject<List<Vendor>>();
                 }
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
-
-            return list;
-        }
-
-        /// <summary>
-        /// Get a list of all camera vendors filtered by given MAC address
-        /// </summary>
-        /// <param name="mac">MAC Address</param>
-        /// <returns>List<Vendor></returns>
-        public List<Vendor> GetVendorsByMac(string mac)
-        {
-            return GetAllVendors(string.Format(API.VENDORS_MAC, mac));
         }
 
         #endregion
@@ -119,47 +111,41 @@ namespace EvercamV1
         #region MODELS
 
         /// <summary>
-        /// Get list of all supported camera vendors
+        /// Returns set of known models for a supported camera vendor
         /// </summary>
-        /// <returns>List<Vendor></returns>
-        public List<Vendor> GetAllVendors()
-        {
-            return GetAllVendors(API.MODELS);
-        }
-
-        /// <summary>
-        /// Get list of known camera models for given vendor ID
-        /// </summary>
-        /// <param name="id">Vendor ID</param>
-        /// <returns>List<Vendor></returns>
-        public List<Vendor> GetVendorsById(string vendorId)
-        {
-            return GetAllVendors(string.Format(API.MODELS_VENDOR, vendorId));
-        }
-
-        /// <summary>
-        /// Get details of a particular camera model with given vendor ID and model ID
-        /// </summary>
-        /// <param name="vendorId">Vendor ID</param>
-        /// <param name="modelId">Model ID</param>
-        /// <returns>Model</returns>
-        public Model GetModel(string vendorId, string modelId)
+        /// <param name="id">Unique identifier for the model</param>
+        /// <param name="name">Name of the model (partial search)</param>
+        /// <param name="vendor_id">Unique identifier for the vendor</param>
+        /// <param name="limit">Number of results per page. Defaults to 25.</param>
+        /// <param name="page">Page number, starting from 0</param>
+        /// <returns>List<Model></returns>
+        public List<Model> SearchModels(string id, string name, string vendor_id, int limit, int page)
         {
             try
             {
-                var request = new RestRequest(string.Format(API.MODELS_VENDOR_MODEL, vendorId, modelId), Method.GET);
-                request.RequestFormat = DataFormat.Json;
-                
-                var response = API.Client.Value.Execute(request);
+                var request = new RestRequest(API.MODELS_SEARCH, Method.GET);
 
+                if (!string.IsNullOrEmpty(id)) request.AddParameter("id", id, ParameterType.QueryString);
+                if (!string.IsNullOrEmpty(name)) request.AddParameter("name", name, ParameterType.QueryString);
+                if (!string.IsNullOrEmpty(vendor_id)) request.AddParameter("vendor_id", vendor_id, ParameterType.QueryString);
+                if (limit <= 0) request.AddParameter("limit", "10", ParameterType.QueryString);
+                else request.AddParameter("limit", limit, ParameterType.QueryString);
+                if (page <= 0) request.AddParameter("page", "0", ParameterType.QueryString);
+                else request.AddParameter("page", page, ParameterType.QueryString);
+
+                SetClientCredentials(request, true);
+
+                request.RequestFormat = DataFormat.Json;
+
+                var response = API.Client.Value.Execute(request);
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
                     case HttpStatusCode.NoContent:
-                    case HttpStatusCode.Accepted:
-                        return JObject.Parse(response.Content)["models"].ToObject<List<Model>>().FirstOrDefault<Model>();
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["models"].ToObject<List<Model>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -197,7 +183,7 @@ namespace EvercamV1
                     case HttpStatusCode.Created:
                         return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -342,9 +328,9 @@ namespace EvercamV1
                     case HttpStatusCode.Accepted:
                     case HttpStatusCode.Continue:
                     case HttpStatusCode.NoContent:
-                        return JObject.Parse(response.Content).ToObject<Message>().Contents;
+                        return JObject.Parse(response.Content).ToObject<Error>().Message;
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -376,7 +362,7 @@ namespace EvercamV1
                     case HttpStatusCode.Accepted:
                         return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -403,7 +389,7 @@ namespace EvercamV1
                     case HttpStatusCode.OK:
                         return JObject.Parse(response.Content).ToObject<LiveImage>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -444,7 +430,7 @@ namespace EvercamV1
                     case HttpStatusCode.Accepted:
                         return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -475,7 +461,7 @@ namespace EvercamV1
                     case HttpStatusCode.Accepted:
                         return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>().FirstOrDefault<Camera>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -498,7 +484,7 @@ namespace EvercamV1
                     case HttpStatusCode.NoContent:
                         return response.Content;
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -531,7 +517,7 @@ namespace EvercamV1
                     case HttpStatusCode.Created:
                         return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -580,7 +566,7 @@ namespace EvercamV1
                     case HttpStatusCode.Created:
                         return JsonConvert.DeserializeObject<LogMessages>(response.Content);
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -629,7 +615,7 @@ namespace EvercamV1
                     case HttpStatusCode.Created:
                         return JsonConvert.DeserializeObject<LogObjects>(response.Content);
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -701,7 +687,7 @@ namespace EvercamV1
                     case HttpStatusCode.NoContent:
                         return JObject.Parse(response.Content)["days"].ToObject<List<int>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -733,7 +719,7 @@ namespace EvercamV1
                     case HttpStatusCode.NoContent:
                         return JObject.Parse(response.Content)["hours"].ToObject<List<int>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -784,7 +770,7 @@ namespace EvercamV1
                     case HttpStatusCode.Created:
                         return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>().FirstOrDefault<Snapshot>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -819,7 +805,7 @@ namespace EvercamV1
                     case HttpStatusCode.Created:
                         return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>().FirstOrDefault<Snapshot>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -847,7 +833,7 @@ namespace EvercamV1
                     case HttpStatusCode.NoContent:
                         return response.Content;
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -885,7 +871,7 @@ namespace EvercamV1
                     case HttpStatusCode.NoContent:
                         return JObject.Parse(response.Content)["shares"].ToObject<List<Share>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -914,7 +900,7 @@ namespace EvercamV1
                     case HttpStatusCode.NoContent:
                         return JObject.Parse(response.Content)["shares"].ToObject<List<Share>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -947,7 +933,7 @@ namespace EvercamV1
                     case HttpStatusCode.NoContent:
                         return JObject.Parse(response.Content)["shares"].ToObject<List<Share>>().FirstOrDefault();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -1009,7 +995,7 @@ namespace EvercamV1
                     case HttpStatusCode.NoContent:
                         return response.Content;
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -1038,7 +1024,7 @@ namespace EvercamV1
                     case HttpStatusCode.NoContent:
                         return JObject.Parse(response.Content)["shares"].ToObject<List<Share>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -1072,7 +1058,7 @@ namespace EvercamV1
                     case HttpStatusCode.NoContent:
                         return JObject.Parse(response.Content)["share_requests"].ToObject<List<ShareRequest>>().FirstOrDefault();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -1103,7 +1089,7 @@ namespace EvercamV1
                         return JObject.Parse(response.Content)["share_requests"].ToObject<List<ShareRequest>>();
                 }
 
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -1133,7 +1119,7 @@ namespace EvercamV1
                     case HttpStatusCode.NoContent:
                         return response.Content;
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -1209,9 +1195,9 @@ namespace EvercamV1
                     case HttpStatusCode.Accepted:
                     case HttpStatusCode.Continue:
                     case HttpStatusCode.NoContent:
-                        return JObject.Parse(response.Content).ToObject<Message>().Contents;
+                        return JObject.Parse(response.Content).ToObject<Error>().Message;
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -1241,7 +1227,7 @@ namespace EvercamV1
                     case HttpStatusCode.Created:
                         return JObject.Parse(response.Content)["vendors"].ToObject<List<Vendor>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -1273,7 +1259,7 @@ namespace EvercamV1
                     case HttpStatusCode.Created:
                         return JObject.Parse(response.Content)["cameras"].ToObject<List<Camera>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -1305,7 +1291,7 @@ namespace EvercamV1
                     case HttpStatusCode.Created:
                         return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -1341,7 +1327,7 @@ namespace EvercamV1
                     case HttpStatusCode.Created:
                         return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>();
                 }
-                throw new EvercamException(JObject.Parse(response.Content).ToObject<Message>().Contents, response.ErrorException);
+                throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
             }
             catch (Exception x) { throw new EvercamException(x); }
         }
@@ -1364,22 +1350,27 @@ namespace EvercamV1
         /// <param name="forceCredentials">Make sure if request requires client credentials as must, errors if not specified</param>
         private void SetClientCredentials(RestRequest request, bool forceCredentials)
         {
-            if (forceCredentials && Client == null)
+            if (forceCredentials && (Client == null || string.IsNullOrEmpty(Client.ID) || string.IsNullOrEmpty(Client.Secret)))
                 throw new EvercamException("Client credentials not presented (ID, Secret, Redirect Uri)");
 
             if (Client != null) {
-                request.Parameters.Add(new Parameter() { Name = "api_id", Value = Client.ID, Type = ParameterType.QueryString });
-                request.Parameters.Add(new Parameter() { Name = "api_key", Value = Client.Secret, Type = ParameterType.QueryString });
-                request.Parameters.Add(new Parameter() { Name = "redirect_uri", Value = Client.RedirectUri, Type = ParameterType.QueryString });
+                request.AddParameter("api_id", Client.ID, ParameterType.QueryString);
+                request.AddParameter("api_key", Client.Secret, ParameterType.QueryString);
+                if (!string.IsNullOrEmpty(Client.RedirectUri))
+                    request.AddParameter("redirect_uri", Client.RedirectUri, ParameterType.QueryString);
             }
         }
 
         #endregion
     }
 
-    public class Message
+    public class Error
     {
         [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
-        public string Contents;
+        public string Message;
+        [JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
+        public string Code;
+        [JsonProperty("context", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] Context;
     }
 }
