@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -160,19 +161,16 @@ namespace EvercamV1
         /// <param name="userId">The user name or email address of the user</param>
         /// <param name="include_shared">Set to true to include cameras shared with the user in the fetch</param>
         /// <returns>List of Cameras</returns>
-        public List<Camera> GetUserCameras(string userId, bool include_shared)
+        public List<Camera> GetUserCameras(string userId, bool include_shared, bool include_thumbs)
         {
             try
             {
-                var request = new RestRequest(string.Format(API.USERS_CAMERA, userId), Method.GET);
+                var request = new RestRequest(string.Format(API.USERS_CAMERAS, userId), Method.GET);
                 request.AddParameter("include_shared", include_shared);
+                request.AddParameter("thumbnail", include_thumbs);
                 request.RequestFormat = DataFormat.Json;
 
-                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
-                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
-
+                SetAuthHeader();
                 SetClientCredentials(request, false);
 
                 var response = API.Client.Value.Execute(request);
@@ -395,6 +393,20 @@ namespace EvercamV1
         }
 
         /// <summary>
+        /// Returns base64 encoded string of jpg from camera's proxy url
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <returns>Returns live image as base64 string</returns>
+        public string GetProxyImage(string id)
+        {
+            try
+            {
+                return DownloadImage(API.PROXY_URL + id + ".jpg");
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
         /// Returns all data for a given camera
         /// </summary>
         /// <param name="id">Camera ID</param>
@@ -502,11 +514,7 @@ namespace EvercamV1
                 request.AddParameter("ids", ids);
                 request.RequestFormat = DataFormat.Json;
 
-                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
-                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
-
+                SetAuthHeader();
                 SetClientCredentials(request, false);
 
                 var response = API.Client.Value.Execute(request);
@@ -551,11 +559,7 @@ namespace EvercamV1
                 request.AddParameter("objects", false);
                 request.RequestFormat = DataFormat.Json;
 
-                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
-                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
-
+                SetAuthHeader();
                 SetClientCredentials(request, false);
 
                 var response = API.Client.Value.Execute(request);
@@ -600,11 +604,7 @@ namespace EvercamV1
                 request.AddParameter("objects", true);
                 request.RequestFormat = DataFormat.Json;
 
-                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
-                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
-
+                SetAuthHeader();
                 SetClientCredentials(request, false);
 
                 var response = API.Client.Value.Execute(request);
@@ -652,13 +652,10 @@ namespace EvercamV1
         /// <returns>Snapshot</returns>
         public Snapshot GetLatestSnapshot(string id, bool withData)
         {
-            if (withData)
-                return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT_LATEST, id)).FirstOrDefault<Snapshot>();
-            else
-                return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT_LATEST, id), 
-                    new List<Parameter>() { 
-                        new Parameter() { Name = "with_data", Value = withData, Type = ParameterType.GetOrPost } 
-                    }).FirstOrDefault<Snapshot>();
+            return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT_LATEST, id), 
+                new List<Parameter>() { 
+                    new Parameter() { Name = "with_data", Value = withData, Type = ParameterType.GetOrPost } 
+                }).FirstOrDefault<Snapshot>();
         }
 
         /// <summary>
@@ -1243,12 +1240,8 @@ namespace EvercamV1
             {
                 var request = new RestRequest(url, Method.GET);
                 request.RequestFormat = DataFormat.Json;
-                
-                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
-                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
 
+                SetAuthHeader();
                 SetClientCredentials(request, false);
 
                 var response = API.Client.Value.Execute(request);
@@ -1276,12 +1269,8 @@ namespace EvercamV1
                 var request = new RestRequest(url, Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
-                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
-                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
-
-                SetClientCredentials(request, true);
+                SetAuthHeader();
+                SetClientCredentials(request, false);
 
                 var response = API.Client.Value.Execute(request);
                 switch (response.StatusCode)
@@ -1309,15 +1298,11 @@ namespace EvercamV1
                 var request = new RestRequest(url, Method.GET);
                 request.RequestFormat = DataFormat.Json;
 
-                if (Auth != null && Auth.OAuth2 != null && !string.IsNullOrEmpty(Auth.OAuth2.AccessToken))
-                    API.Client.Value.Authenticator = new HttpOAuth2Authenticator(Auth.OAuth2.AccessToken, Auth.OAuth2.TokenType);
-                else if (Auth != null && Auth.Basic != null && !string.IsNullOrEmpty(Auth.Basic.UserName))
-                    API.Client.Value.Authenticator = new HttpBasicAuthenticator(Auth.Basic.UserName, Auth.Basic.Password);
+                SetAuthHeader();
+                SetClientCredentials(request, false);
 
                 if (parameters != null && parameters.Count > 0)
                     request.Parameters.AddRange(parameters);
-
-                SetClientCredentials(request, true);
 
                 var response = API.Client.Value.Execute(request);
                 switch (response.StatusCode)
@@ -1353,12 +1338,37 @@ namespace EvercamV1
             if (forceCredentials && (Client == null || string.IsNullOrEmpty(Client.ID) || string.IsNullOrEmpty(Client.Secret)))
                 throw new EvercamException("Client credentials not presented (ID, Secret, Redirect Uri)");
 
-            if (Client != null) {
+            if (Client != null && !string.IsNullOrEmpty(Client.ID) && !string.IsNullOrEmpty(Client.Secret))
+            {
                 request.AddParameter("api_id", Client.ID, ParameterType.QueryString);
                 request.AddParameter("api_key", Client.Secret, ParameterType.QueryString);
                 if (!string.IsNullOrEmpty(Client.RedirectUri))
                     request.AddParameter("redirect_uri", Client.RedirectUri, ParameterType.QueryString);
             }
+        }
+
+        public static string DownloadImage(string url)
+        {
+            byte[] bytes = new byte[] { };
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.KeepAlive = false;
+
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using (Stream stream = response.GetResponseStream())
+                {
+                    using (MemoryStream ms = new MemoryStream(60000))
+                    {
+                        if (response.ContentType.Contains("image") && stream != null)
+                        {
+                            stream.CopyTo(ms);
+                            bytes = ms.ToArray();
+                        }
+                    }
+                }
+            }
+
+            return "data:image/jpeg;base64," + Convert.ToBase64String(bytes);
         }
 
         #endregion

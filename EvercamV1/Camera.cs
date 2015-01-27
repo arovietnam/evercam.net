@@ -37,10 +37,16 @@ namespace EvercamV1
         public string VendorName { get; set; }
 
         /// <summary>
-        /// (optional) Name of the camera model
+        /// Unique identifier for the camera model
         /// </summary>
-        [JsonProperty("model", NullValueHandling = NullValueHandling.Ignore)]
-        public string Model { get; set; }
+        [JsonProperty("model_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string ModelID { get; set; }
+
+        /// <summary>
+        /// Name of the camera model
+        /// </summary>
+        [JsonProperty("model_name", NullValueHandling = NullValueHandling.Ignore)]
+        public string ModelName { get; set; }
 
         /// <summary>
         /// Unix timestamp at creation
@@ -136,7 +142,7 @@ namespace EvercamV1
         /// (optional) Proxy Url of the camera
         /// </summary>
         [JsonProperty("proxy_url", NullValueHandling = NullValueHandling.Ignore)]
-        public URL Proxy { get; set; }
+        public Proxy ProxyUrl { get; set; }
 
         /// <summary>
         /// (optional) True if the user owns the camera, false otherwise
@@ -150,6 +156,12 @@ namespace EvercamV1
         [JsonProperty("rights", NullValueHandling = NullValueHandling.Ignore)]
         public string Rights { get; set; }
 
+        /// <summary>
+        /// 150x150 preview of camera view
+        /// </summary>
+        [JsonProperty("thumbnail", NullValueHandling = NullValueHandling.Ignore)]
+        public string Thumbnail { get; set; }
+
         public CameraInfo GetInfo()
         {
             return new CameraInfo() 
@@ -161,7 +173,7 @@ namespace EvercamV1
                 IsPublic = this.IsPublic,
                 External = this.External,
                 Internal = this.Internal,
-                Proxy = this.Proxy
+                ProxyUrl = this.ProxyUrl
             };
         }
     }
@@ -208,6 +220,24 @@ namespace EvercamV1
         public string H264 { get; set; }
     }
 
+    public class Proxy
+    {
+        [JsonProperty("jpg", NullValueHandling = NullValueHandling.Ignore)]
+        public string Jpg { get; set; }
+
+        [JsonProperty("rtmp", NullValueHandling = NullValueHandling.Ignore)]
+        public string Rtmp { get; set; }
+    }
+
+    public class Location
+    {
+        [JsonProperty("lat", NullValueHandling = NullValueHandling.Ignore)]
+        public double Latitude;
+
+        [JsonProperty("lng", NullValueHandling = NullValueHandling.Ignore)]
+        public double Longitude;
+    }
+
     public class CameraInfo
     {
         /// <summary>
@@ -250,7 +280,7 @@ namespace EvercamV1
         /// (optional) Proxy Url of the camera
         /// </summary>
         [JsonProperty("proxy_url", NullValueHandling = NullValueHandling.Ignore)]
-        public URL Proxy { get; set; }
+        public Proxy ProxyUrl { get; set; }
 
         /// <summary>
         /// (optional) Camera username
@@ -323,14 +353,5 @@ namespace EvercamV1
         {
             return Utility.ToBytes(this.Data);
         }
-    }
-    
-    public class Location
-    {
-        [JsonProperty("lat", NullValueHandling = NullValueHandling.Ignore)]
-        public double Latitude;
-
-        [JsonProperty("lng", NullValueHandling = NullValueHandling.Ignore)]
-        public double Longitude;
     }
 }

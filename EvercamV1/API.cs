@@ -8,6 +8,8 @@ namespace EvercamV1
     {
         // Live Server
         public const string LIVE_URL = "https://api.evercam.io/v1/";
+        // Proxy Server
+        public const string PROXY_URL = "http://evr.cm/";
         // Test Server
         public const string TEST_URL = "http://proxy.evr.cm:9292/v1/";
 
@@ -21,7 +23,7 @@ namespace EvercamV1
         public const string VENDORS_SEARCH = "vendors/search.json";
         public const string USERS = "users.json";
         public const string USERS_ID = "users/{0}.json";
-        public const string USERS_CAMERA = "users/{0}/cameras.json";
+        public const string USERS_CAMERAS = "users/{0}/cameras.json";
         public const string USERS_RIGHT = "users/{0}/rights.json";
         public const string USERS_CREDENTIALS = "users/{0}/credentials.json";
         public const string PUBLIC_CAMERAS = "public/cameras.json";
