@@ -889,7 +889,7 @@ namespace EvercamV2
                     case HttpStatusCode.OK:
                     case HttpStatusCode.NoContent:
                     case HttpStatusCode.Created:
-                        return JObject.Parse(response.Content)["snapshots"].ToObject<List<Snapshot>>().FirstOrDefault<Snapshot>();
+                        return JObject.Parse(response.Content).ToObject<Snapshot>();
                 }
                 try
                 {
@@ -1542,7 +1542,7 @@ namespace EvercamV2
         /// Fetch a list of publicly discoverable cameras from within the Evercam system
         /// </summary>
         /// <returns></returns>
-        public List<PublicCamera> GetPublicCameras(int? offset, int? limit, bool? case_sensitive, string id_starts_with, string id_ends_with, string id_contains, string is_near_to, float? within_distance, bool? thumbnail)
+        public List<PublicCamera> GetPublicCameras(int? offset, int? limit, bool? case_sensitive, string id_starts_with, string id_ends_with, string id_contains, string is_near_to, float? within_distance)
         {
             try
             {
@@ -1555,7 +1555,6 @@ namespace EvercamV2
                 if (!string.IsNullOrEmpty(id_contains)) request.AddParameter("id_contains", id_contains, ParameterType.GetOrPost);
                 if (!string.IsNullOrEmpty(is_near_to)) request.AddParameter("is_near_to", is_near_to, ParameterType.GetOrPost);
                 if (within_distance.HasValue) request.AddParameter("within_distance", within_distance.Value, ParameterType.GetOrPost);
-                if (thumbnail.HasValue) request.AddParameter("thumbnail", thumbnail.Value, ParameterType.GetOrPost);
 
                 request.RequestFormat = DataFormat.Json;
 
@@ -1700,7 +1699,6 @@ namespace EvercamV2
             try
             {
                 var request = new RestRequest(url, Method.GET);
-                //if (thumbnail.HasValue) request.AddParameter("thumbnail", thumbnail.Value);
 
                 request.RequestFormat = DataFormat.Json;
 
