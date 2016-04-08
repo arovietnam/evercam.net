@@ -43,6 +43,9 @@ namespace EvercamV2
         public const string CAMERAS_SNAPSHOT_DAYS = "cameras/{0}/recordings/snapshots/{1}/{2}/days";
         public const string CAMERAS_SNAPSHOT_HOURS = "cameras/{0}/recordings/snapshots/{1}/{2}/{3}/hours";
         public const string CAMERAS_SNAPSHOT_TIMESTAMP = "cameras/{0}/recordings/snapshots/{1}";
+        public const string ARCHIVES = "cameras/{0}/archives";
+        public const string ARCHIVES_PENDING = "cameras/archives/pending";
+        public const string ARCHIVES_UPDATE = "cameras/{0}/archives/{1}";
 
         // Declares static instance field with custom default value
         internal static ThreadLocal<RestClient> Client = new ThreadLocal<RestClient>(() => { return new RestClient(LIVE_URL); });

@@ -840,6 +840,149 @@ namespace EvercamV2
 
         #endregion
 
+        #region ARCHIVES
+
+        /// <summary>
+        /// Returns data for a specified set of archives. The ultimate intention would be to expand this functionality to be a more general search. The current implementation is as a basic absolute match list capability.
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <returns>List of Archives objects</returns>
+        public List<Camera> GetArchives(string id)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.ARCHIVES, id), Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                SetAuthHeader();
+                SetClientCredentials(request, false);
+
+                var response = API.Client.Value.Execute(request);
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["archives"].ToObject<List<Camera>>();
+                }
+                try
+                {
+                    throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
+                }
+                catch
+                {
+                    throw new EvercamException(response.Content);
+                }
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Returns data of pending archive. The ultimate intention would be to expand this functionality to be a more general search. The current implementation is as a basic absolute match list capability.
+        /// </summary>
+        /// <param name="ids">Camera ID</param>
+        /// <param name="user_id">Unique Camera Id</param>
+        /// <returns>Archive objects</returns>
+        public Archive GetArchive(string camera_id, string id)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.ARCHIVES_UPDATE, camera_id, id), Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                SetAuthHeader();
+                SetClientCredentials(request, false);
+
+                var response = API.Client.Value.Execute(request);
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["archives"].ToObject<List<Archive>>().FirstOrDefault<Archive>();
+                }
+                try
+                {
+                    throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
+                }
+                catch
+                {
+                    throw new EvercamException(response.Content);
+                }
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Returns data of first pending archive.
+        /// </summary>
+        /// <returns>First Pending Archive objects</returns>
+        public Archive GetPendingArchive()
+        {
+            try
+            {
+                var request = new RestRequest(API.ARCHIVES_PENDING, Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                SetAuthHeader();
+                SetClientCredentials(request, false);
+
+                var response = API.Client.Value.Execute(request);
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.NoContent:
+                    case HttpStatusCode.Created:
+                        return JObject.Parse(response.Content)["archives"].ToObject<List<Archive>>().FirstOrDefault<Archive>();
+                }
+                try
+                {
+                    throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
+                }
+                catch
+                {
+                    throw new EvercamException(response.Content);
+                }
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        /// <summary>
+        /// Updates full or partial of Archive
+        /// </summary>
+        /// <param name="user">Archive Details</param>
+        /// <returns>Archive Details</returns>
+        public Archive UpdateArchive(ArchiveInfo archive)
+        {
+            try
+            {
+                var request = new RestRequest(string.Format(API.ARCHIVES_UPDATE, archive.CameraId, archive.ID), Method.PATCH);
+                request.AddParameter("text/json", JsonConvert.SerializeObject(archive), ParameterType.RequestBody);
+                request.RequestFormat = DataFormat.Json;
+                SetClientCredentials(request, true);
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.Accepted:
+                    case HttpStatusCode.NoContent:
+                        return JObject.Parse(response.Content)["archives"].ToObject<List<Archive>>().FirstOrDefault<Archive>();
+                }
+                try
+                {
+                    throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
+                }
+                catch
+                {
+                    throw new EvercamException(response.Content);
+                }
+            }
+            catch (Exception x) { throw new EvercamException(x); }
+        }
+
+        #endregion
+
         #region SNAPSHOTS
 
         /// <summary>
