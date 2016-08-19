@@ -957,8 +957,12 @@ namespace EvercamV2
             try
             {
                 var request = new RestRequest(string.Format(API.ARCHIVES_UPDATE, archive.CameraId, archive.ID), Method.PATCH);
-                request.AddParameter("text/json", JsonConvert.SerializeObject(archive), ParameterType.RequestBody);
-                request.RequestFormat = DataFormat.Json;
+                request.AddParameter("status", (int)archive.Status, ParameterType.GetOrPost);
+                request.AddParameter("frames", archive.Frames, ParameterType.GetOrPost);
+                request.AddParameter("public", archive.IsPublic.ToString().ToLower(), ParameterType.GetOrPost);
+                if (!string.IsNullOrEmpty(archive.Title)) request.AddParameter("title", archive.Title, ParameterType.GetOrPost);
+
+                SetAuthHeader();
                 SetClientCredentials(request, true);
                 var response = API.Client.Value.Execute(request);
 
@@ -1054,10 +1058,11 @@ namespace EvercamV2
         /// <param name="with_data">Should it send image data?</param>
         /// <param name="range">Time range in seconds around specified timestamp. Default range is one second (so it matches only exact timestamp)</param>
         /// <returns>Snapshot</returns>
-        public Snapshot GetSnapshot(string id, string timestamp, bool? with_data, int? range)
+        public Snapshot GetSnapshot(string id, string timestamp, string notes, bool? with_data, int? range)
         {
             List<Parameter> param = new List<Parameter>();
 
+            param.Add(new Parameter() { Name = "notes", Value = notes, Type = ParameterType.GetOrPost });
             if (with_data.HasValue) param.Add(new Parameter() { Name = "with_data", Value = with_data.ToString().ToLower(), Type = ParameterType.GetOrPost });
             if (range.HasValue) param.Add(new Parameter() { Name = "range", Value = range, Type = ParameterType.GetOrPost });
 
@@ -1265,13 +1270,39 @@ namespace EvercamV2
         /// <param name="id">Camera ID</param>
         /// <param name="withData">Should it send image data?</param>
         /// <returns>Snapshot</returns>
-        public Snapshot GetLatestSnapshot(string id, bool? withData)
+        public byte[] GetThumbnail(string id, bool? withData)
         {
-            List<Parameter> param = new List<Parameter>();
+            /*List<Parameter> param = new List<Parameter>();
 
             if (withData.HasValue) param.Add(new Parameter() { Name = "with_data", Value = withData.ToString().ToLower(), Type = ParameterType.GetOrPost });
 
-            return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT_LATEST, id), param).FirstOrDefault<Snapshot>();
+            return GetAllSnapshots(string.Format(API.CAMERAS_SNAPSHOT_LATEST, id), param).FirstOrDefault<Snapshot>();*/
+
+            try
+            {
+                var request = new RestRequest(string.Format(API.CAMERAS_SNAPSHOT_THUMBNAIL, id), Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                SetAuthHeader();
+                SetClientCredentials(request, false);
+
+                var response = API.Client.Value.Execute(request);
+
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.OK:
+                        return response.RawBytes;
+                }
+                try
+                {
+                    throw new EvercamException(JObject.Parse(response.Content).ToObject<Error>().Message, response.ErrorException);
+                }
+                catch
+                {
+                    throw new EvercamException(response.Content);
+                }
+            }
+            catch (Exception x) { throw new EvercamException(x); }
         }
 
         #endregion

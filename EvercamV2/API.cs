@@ -7,13 +7,13 @@ namespace EvercamV2
     public sealed class API
     {
         // Live Server
-        public const string LIVE_URL = "https://api.evercam.io/v1/";
+        public const string LIVE_URL = "https://media.evercam.io/v1/";
         // Proxy Server
         public const string PROXY_URL = "http://evr.cm/";
         // Test Server
         public const string TEST_URL = "http://proxy.evr.cm:9292/v1/";
         // Local Server
-        //public const string TEST_URL = "http://localhost:9292/v1/";
+        //public const string TEST_URL = "http://localhost:4000/v1/";
 
         internal const string CAMERA_PROTOCOL = "http://";
 
@@ -39,7 +39,7 @@ namespace EvercamV2
         public const string CAMERAS_LIVE = "cameras/{0}/live/snapshot";
         public const string CAMERAS_LOGS = "cameras/{0}/logs";
         public const string CAMERAS_SNAPSHOT = "cameras/{0}/recordings/snapshots";
-        public const string CAMERAS_SNAPSHOT_LATEST = "cameras/{0}/recordings/snapshots/latest";
+        public const string CAMERAS_SNAPSHOT_THUMBNAIL = "cameras/{0}/thumbnail";
         public const string CAMERAS_SNAPSHOT_DAYS = "cameras/{0}/recordings/snapshots/{1}/{2}/days";
         public const string CAMERAS_SNAPSHOT_HOURS = "cameras/{0}/recordings/snapshots/{1}/{2}/{3}/hours";
         public const string CAMERAS_SNAPSHOT_TIMESTAMP = "cameras/{0}/recordings/snapshots/{1}";
